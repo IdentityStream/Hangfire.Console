@@ -16,6 +16,7 @@ namespace Hangfire.Console.Tests.Server
         private readonly Mock<IJobCancellationToken> _cancellationToken;
         private readonly Mock<JobStorageConnection> _connection;
         private readonly Mock<JobStorageTransaction> _transaction;
+        private readonly Mock<JobStorage> _jobStorage;
 
         public ConsoleServerFilterFacts()
         {
@@ -23,6 +24,7 @@ namespace Hangfire.Console.Tests.Server
             _cancellationToken = new Mock<IJobCancellationToken>();
             _connection = new Mock<JobStorageConnection>();
             _transaction = new Mock<JobStorageTransaction>();
+            _jobStorage = new Mock<JobStorage>();
 
             _connection.Setup(x => x.CreateWriteTransaction())
                 .Returns(_transaction.Object);
@@ -57,7 +59,7 @@ namespace Hangfire.Console.Tests.Server
             var consoleContext = ConsoleContext.FromPerformContext(context);
             Assert.Null(consoleContext);
         }
-        
+
         [Fact]
         public void CreatesConsoleContext_IfStateIsProcessing_DoesNotExpireData_IfConsoleNotPresent()
         {
@@ -94,10 +96,10 @@ namespace Hangfire.Console.Tests.Server
             Assert.Null(consoleContext);
 
             _connection.Verify(x => x.GetHashTtl(It.IsAny<string>()));
-            
+
             _transaction.Verify(x => x.ExpireSet(It.IsAny<string>(), It.IsAny<TimeSpan>()));
             _transaction.Verify(x => x.ExpireHash(It.IsAny<string>(), It.IsAny<TimeSpan>()));
-            
+
             _transaction.Verify(x => x.Commit());
         }
 
@@ -153,7 +155,7 @@ namespace Hangfire.Console.Tests.Server
             var context = CreatePerformContext();
 
             performer.Perform(context);
-            
+
             var consoleContext = ConsoleContext.FromPerformContext(context);
             Assert.Null(consoleContext);
 
@@ -165,11 +167,13 @@ namespace Hangfire.Console.Tests.Server
             _transaction.Verify(x => x.Commit());
         }
 
+#pragma warning disable xUnit1013
         public static void JobMethod(PerformContext context)
+#pragma warning restore xUnit1013
         {
             // reset transaction method calls after OnPerforming is completed
             var @this = (ConsoleServerFilterFacts) context.Items["this"];
-            @this._transaction.ResetCalls();
+            @this._transaction.Invocations.Clear();
         }
 
         private IJobFilterProvider CreateJobFilterProvider(bool followJobRetention = false)
@@ -182,8 +186,10 @@ namespace Hangfire.Console.Tests.Server
 
         private PerformContext CreatePerformContext()
         {
-            var context = new PerformContext(_connection.Object, 
-                new BackgroundJob("1", Job.FromExpression(() => JobMethod(null)), DateTime.UtcNow), 
+            var context = new PerformContext(
+                _jobStorage.Object,
+                _connection.Object,
+                new BackgroundJob("1", Job.FromExpression(() => JobMethod(null)), DateTime.UtcNow),
                 _cancellationToken.Object);
             context.Items["this"] = this;
             return context;

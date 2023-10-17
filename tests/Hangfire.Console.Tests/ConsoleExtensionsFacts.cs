@@ -15,17 +15,19 @@ namespace Hangfire.Console.Tests
         private readonly Mock<IJobCancellationToken> _cancellationToken;
         private readonly Mock<JobStorageConnection> _connection;
         private readonly Mock<JobStorageTransaction> _transaction;
+        private readonly Mock<JobStorage> _jobStorage;
 
         public ConsoleExtensionsFacts()
         {
             _cancellationToken = new Mock<IJobCancellationToken>();
             _connection = new Mock<JobStorageConnection>();
             _transaction = new Mock<JobStorageTransaction>();
+            _jobStorage = new Mock<JobStorage>();
 
             _connection.Setup(x => x.CreateWriteTransaction())
                 .Returns(_transaction.Object);
         }
-        
+
         [Fact]
         public void WriteLine_DoesNotFail_IfContextIsNull()
         {
@@ -71,7 +73,7 @@ namespace Hangfire.Console.Tests
             context.Items["ConsoleContext"] = CreateConsoleContext(context);
 
             var progressBar = ConsoleExtensions.WriteProgressBar(context);
-            
+
             Assert.IsType<DefaultProgressBar>(progressBar);
             _transaction.Verify(x => x.Commit());
         }
@@ -87,13 +89,17 @@ namespace Hangfire.Console.Tests
             _transaction.Verify(x => x.Commit(), Times.Never);
         }
 
+#pragma warning disable xUnit1013
         public static void JobMethod()
+#pragma warning restore xUnit1013
         {
         }
 
         private PerformContext CreatePerformContext()
         {
-            return new PerformContext(_connection.Object,
+            return new PerformContext(
+                _jobStorage.Object,
+                _connection.Object,
                 new BackgroundJob("1", Common.Job.FromExpression(() => JobMethod()), DateTime.UtcNow),
                 _cancellationToken.Object);
         }

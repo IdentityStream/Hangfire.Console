@@ -20,7 +20,7 @@ namespace Hangfire.Console.Storage
 
             if (!(connection is JobStorageConnection jobStorageConnection))
                 throw new NotSupportedException("Storage connections must implement JobStorageConnection");
-            
+
             _connection = jobStorageConnection;
         }
 
@@ -41,9 +41,9 @@ namespace Hangfire.Console.Storage
             {
                 if (!(transaction is JobStorageTransaction))
                     throw new NotSupportedException("Storage tranactions must implement JobStorageTransaction");
-                
+
                 transaction.SetRangeInHash(consoleId.GetHashKey(), new[] { new KeyValuePair<string, string>("jobId", consoleId.JobId) });
-                
+
                 transaction.Commit();
             }
         }
@@ -56,7 +56,7 @@ namespace Hangfire.Console.Storage
                 throw new ArgumentNullException(nameof(line));
             if (line.IsReference)
                 throw new ArgumentException("Cannot add reference directly", nameof(line));
-            
+
             using (var tran = _connection.CreateWriteTransaction())
             {
                 // check if encoded message fits into Set's Value field
@@ -72,14 +72,14 @@ namespace Hangfire.Console.Storage
                 else
                 {
                     // try to encode and see if it fits
-                    value = JobHelper.ToJson(line);
+                    value = SerializationHelper.Serialize(line);
 
                     if (value.Length > ValueFieldLimit)
                     {
                         value = null;
                     }
                 }
-                
+
                 if (value == null)
                 {
                     var referenceKey = Guid.NewGuid().ToString("N");
@@ -89,7 +89,7 @@ namespace Hangfire.Console.Storage
                     line.Message = referenceKey;
                     line.IsReference = true;
 
-                    value = JobHelper.ToJson(line);
+                    value = SerializationHelper.Serialize(line);
                 }
 
                 tran.AddToSet(consoleId.GetSetKey(), value, line.TimeOffset);
@@ -97,14 +97,14 @@ namespace Hangfire.Console.Storage
                 if (line.ProgressValue.HasValue && line.Message == "1")
                 {
                     var progress = line.ProgressValue.Value.ToString(CultureInfo.InvariantCulture);
-                    
+
                     tran.SetRangeInHash(consoleId.GetHashKey(), new[] { new KeyValuePair<string, string>("progress", progress) });
                 }
-                
+
                 tran.Commit();
             }
         }
-        
+
         public TimeSpan GetConsoleTtl(ConsoleId consoleId)
         {
             if (consoleId == null)
@@ -162,7 +162,7 @@ namespace Hangfire.Console.Storage
 
             foreach (var item in items)
             {
-                var line = JobHelper.FromJson<ConsoleLine>(item);
+                var line = SerializationHelper.Deserialize<ConsoleLine>(item);
 
                 if (line.IsReference)
                 {
@@ -183,7 +183,7 @@ namespace Hangfire.Console.Storage
                     {
                         line.Message = _connection.GetValueFromHash(consoleId.GetHashKey(), line.Message);
                     }
-                    
+
                     line.IsReference = false;
                 }
 
