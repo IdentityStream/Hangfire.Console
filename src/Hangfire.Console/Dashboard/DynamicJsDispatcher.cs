@@ -12,7 +12,7 @@ internal class DynamicJsDispatcher : IDashboardDispatcher
 {
     private readonly ConsoleOptions _options;
 
-    public DynamicJsDispatcher(ConsoleOptions options)
+    public DynamicJsDispatcher(ConsoleOptions? options)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }

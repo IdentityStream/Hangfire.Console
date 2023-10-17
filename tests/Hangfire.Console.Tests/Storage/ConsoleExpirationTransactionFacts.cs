@@ -16,7 +16,7 @@ public class ConsoleExpirationTransactionFacts
     [Fact]
     public void Ctor_ThrowsException_IfTransactionIsNull()
     {
-        Assert.Throws<ArgumentNullException>("transaction", () => new ConsoleExpirationTransaction(null));
+        Assert.Throws<ArgumentNullException>("transaction", () => new ConsoleExpirationTransaction(null!));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class ConsoleExpirationTransactionFacts
     {
         var expiration = new ConsoleExpirationTransaction(_transaction.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => expiration.Expire(null, TimeSpan.FromHours(1)));
+        Assert.Throws<ArgumentNullException>("consoleId", () => expiration.Expire(null!, TimeSpan.FromHours(1)));
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class ConsoleExpirationTransactionFacts
     {
         var expiration = new ConsoleExpirationTransaction(_transaction.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => expiration.Persist(null));
+        Assert.Throws<ArgumentNullException>("consoleId", () => expiration.Persist(null!));
     }
 
     [Fact]

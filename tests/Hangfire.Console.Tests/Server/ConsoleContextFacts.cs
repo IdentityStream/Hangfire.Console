@@ -14,7 +14,7 @@ public class ConsoleContextFacts
     [Fact]
     public void Ctor_ThrowsException_IfConsoleIdIsNull()
     {
-        Assert.Throws<ArgumentNullException>("consoleId", () => new ConsoleContext(null, _storage.Object));
+        Assert.Throws<ArgumentNullException>("consoleId", () => new ConsoleContext(null!, _storage.Object));
     }
 
     [Fact]
@@ -22,7 +22,7 @@ public class ConsoleContextFacts
     {
         var consoleId = new ConsoleId("1", new DateTime(2016, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
-        Assert.Throws<ArgumentNullException>("storage", () => new ConsoleContext(consoleId, null));
+        Assert.Throws<ArgumentNullException>("storage", () => new ConsoleContext(consoleId, null!));
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class ConsoleContextFacts
         var consoleId = new ConsoleId("1", new DateTime(2016, 1, 1, 0, 0, 0, DateTimeKind.Utc));
         var context = new ConsoleContext(consoleId, _storage.Object);
 
-        Assert.Throws<ArgumentNullException>("line", () => context.AddLine(null));
+        Assert.Throws<ArgumentNullException>("line", () => context.AddLine(null!));
     }
 
     [Fact]

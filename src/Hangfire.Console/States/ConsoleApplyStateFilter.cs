@@ -12,7 +12,7 @@ internal class ConsoleApplyStateFilter : IApplyStateFilter
 {
     private readonly ConsoleOptions _options;
 
-    public ConsoleApplyStateFilter(ConsoleOptions options)
+    public ConsoleApplyStateFilter(ConsoleOptions? options)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }

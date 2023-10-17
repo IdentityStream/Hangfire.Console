@@ -55,5 +55,5 @@ internal interface IConsoleStorage : IDisposable
     ///     Returns last (current) state of the console's parent job.
     /// </summary>
     /// <param name="consoleId">Console identifier</param>
-    StateData GetState(ConsoleId consoleId);
+    StateData? GetState(ConsoleId consoleId);
 }

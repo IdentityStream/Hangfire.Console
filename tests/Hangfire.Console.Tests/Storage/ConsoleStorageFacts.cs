@@ -35,7 +35,7 @@ public class ConsoleStorageFacts
     [Fact]
     public void Ctor_ThrowsException_IfConnectionIsNull()
     {
-        Assert.Throws<ArgumentNullException>("connection", () => new ConsoleStorage(null));
+        Assert.Throws<ArgumentNullException>("connection", () => new ConsoleStorage(null!));
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => storage.InitConsole(null));
+        Assert.Throws<ArgumentNullException>("consoleId", () => storage.InitConsole(null!));
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => storage.AddLine(null, new ConsoleLine()));
+        Assert.Throws<ArgumentNullException>("consoleId", () => storage.AddLine(null!, new ConsoleLine()));
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("line", () => storage.AddLine(_consoleId, null));
+        Assert.Throws<ArgumentNullException>("line", () => storage.AddLine(_consoleId, null!));
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => storage.Expire(null, TimeSpan.FromHours(1)));
+        Assert.Throws<ArgumentNullException>("consoleId", () => storage.Expire(null!, TimeSpan.FromHours(1)));
     }
 
     [Fact]
@@ -207,7 +207,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetConsoleTtl(null));
+        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetConsoleTtl(null!));
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetLineCount(null));
+        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetLineCount(null!));
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetLines(null, 0, 1).ToArray());
+        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetLines(null!, 0, 1).ToArray());
     }
 
     [Fact]
@@ -376,7 +376,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetState(null));
+        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetState(null!));
     }
 
     [Fact]
@@ -403,7 +403,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetProgress(null));
+        Assert.Throws<ArgumentNullException>("consoleId", () => storage.GetProgress(null!));
     }
 
     [Fact]

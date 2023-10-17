@@ -12,7 +12,7 @@ internal class DynamicCssDispatcher : IDashboardDispatcher
 {
     private readonly ConsoleOptions _options;
 
-    public DynamicCssDispatcher(ConsoleOptions options)
+    public DynamicCssDispatcher(ConsoleOptions? options)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }

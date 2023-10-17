@@ -11,7 +11,7 @@ public class ConsoleIdFacts
     [Fact]
     public void Ctor_ThrowsAnException_WhenJobIdIsNull()
     {
-        Assert.Throws<ArgumentNullException>("jobId", () => new ConsoleId(null, DateTime.UtcNow));
+        Assert.Throws<ArgumentNullException>("jobId", () => new ConsoleId(null!, DateTime.UtcNow));
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class ConsoleIdFacts
     [Fact]
     public void Parse_ThrowsAnException_WhenValueIsNull()
     {
-        Assert.Throws<ArgumentNullException>("value", () => ConsoleId.Parse(null));
+        Assert.Throws<ArgumentNullException>("value", () => ConsoleId.Parse(null!));
     }
 
     [Fact]

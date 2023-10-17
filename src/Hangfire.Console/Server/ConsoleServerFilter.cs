@@ -14,7 +14,7 @@ internal class ConsoleServerFilter : IServerFilter
 {
     private readonly ConsoleOptions _options;
 
-    public ConsoleServerFilter(ConsoleOptions options)
+    public ConsoleServerFilter(ConsoleOptions? options)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }

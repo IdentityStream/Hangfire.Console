@@ -29,5 +29,5 @@ public abstract class LineDto
     /// <summary>
     ///     Returns HTML color for the console line
     /// </summary>
-    public string Color { get; internal set; }
+    public string? Color { get; internal set; }
 }

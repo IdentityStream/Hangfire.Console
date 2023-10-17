@@ -38,7 +38,7 @@ public class ConsoleServerFilterFacts
     public void DoesNotCreateConsoleContext_IfStateNotFound()
     {
         _connection.Setup(x => x.GetStateData("1"))
-            .Returns((StateData)null);
+            .Returns((StateData)null!);
 
         var performer = new BackgroundJobPerformer(CreateJobFilterProvider());
         var context = CreatePerformContext();
@@ -198,7 +198,7 @@ public class ConsoleServerFilterFacts
         var context = new PerformContext(
             _jobStorage.Object,
             _connection.Object,
-            new BackgroundJob("1", Job.FromExpression(() => JobMethod(null)), DateTime.UtcNow),
+            new BackgroundJob("1", Job.FromExpression(() => JobMethod(null!)), DateTime.UtcNow),
             _cancellationToken.Object)
         {
             Items =

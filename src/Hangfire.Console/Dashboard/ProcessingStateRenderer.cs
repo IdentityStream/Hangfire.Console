@@ -17,7 +17,7 @@ internal class ProcessingStateRenderer
     // ReSharper disable once NotAccessedField.Local
     private readonly ConsoleOptions _options;
 
-    public ProcessingStateRenderer(ConsoleOptions options)
+    public ProcessingStateRenderer(ConsoleOptions? options)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }

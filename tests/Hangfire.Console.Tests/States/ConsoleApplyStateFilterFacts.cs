@@ -177,7 +177,7 @@ public class ConsoleApplyStateFilterFacts
     {
         public string Name => SucceededState.StateName;
 
-        public string Reason => null;
+        public string? Reason => null;
 
         public bool IsFinal => true;
 
@@ -190,7 +190,7 @@ public class ConsoleApplyStateFilterFacts
     {
         public string Name => FailedState.StateName;
 
-        public string Reason => null;
+        public string? Reason => null;
 
         public bool IsFinal => false;
 

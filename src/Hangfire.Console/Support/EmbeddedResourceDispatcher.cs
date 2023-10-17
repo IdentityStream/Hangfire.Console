@@ -12,11 +12,11 @@ internal class EmbeddedResourceDispatcher : IDashboardDispatcher
 {
     private readonly Assembly _assembly;
 
-    private readonly string _contentType;
+    private readonly string? _contentType;
 
     private readonly string _resourceName;
 
-    public EmbeddedResourceDispatcher(Assembly assembly, string resourceName, string contentType = null)
+    public EmbeddedResourceDispatcher(Assembly assembly, string resourceName, string? contentType = null)
     {
         if (string.IsNullOrEmpty(resourceName))
         {
@@ -30,20 +30,22 @@ internal class EmbeddedResourceDispatcher : IDashboardDispatcher
 
     public Task Dispatch(DashboardContext context)
     {
-        if (!string.IsNullOrEmpty(_contentType))
+        if (string.IsNullOrEmpty(_contentType))
         {
-            var contentType = context.Response.ContentType;
+            return WriteResourceAsync(context.Response, _assembly, _resourceName);
+        }
 
-            if (string.IsNullOrEmpty(contentType))
-            {
-                // content type not yet set
-                context.Response.ContentType = _contentType;
-            }
-            else if (contentType != _contentType)
-            {
-                // content type already set, but doesn't match ours
-                throw new InvalidOperationException($"ContentType '{_contentType}' conflicts with '{context.Response.ContentType}'");
-            }
+        var contentType = context.Response.ContentType;
+
+        if (string.IsNullOrEmpty(contentType))
+        {
+            // content type not yet set
+            context.Response.ContentType = _contentType;
+        }
+        else if (contentType != _contentType)
+        {
+            // content type already set, but doesn't match ours
+            throw new InvalidOperationException($"ContentType '{_contentType}' conflicts with '{context.Response.ContentType}'");
         }
 
         return WriteResourceAsync(context.Response, _assembly, _resourceName);

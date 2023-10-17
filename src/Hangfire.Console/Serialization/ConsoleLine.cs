@@ -20,13 +20,13 @@ internal class ConsoleLine
     ///     Message text, or message reference, or progress bar id
     /// </summary>
     [JsonProperty("s", Required = Required.Always)]
-    public string Message { get; set; }
+    public string Message { get; set; } = null!;
 
     /// <summary>
     ///     Text color for this message
     /// </summary>
     [JsonProperty("c", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string TextColor { get; set; }
+    public string? TextColor { get; set; }
 
     /// <summary>
     ///     Value update for a progress bar
@@ -38,5 +38,5 @@ internal class ConsoleLine
     ///     Optional name for a progress bar
     /// </summary>
     [JsonProperty("n", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string ProgressName { get; set; }
+    public string? ProgressName { get; set; }
 }

@@ -128,5 +128,9 @@
     <ItemGroup>
         <PackageReference Include="Hangfire.Core" Version="1.8.5"/>
         <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" PrivateAssets="All" />
+        <PackageReference Include="PolySharp" Version="1.13.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 </Project>

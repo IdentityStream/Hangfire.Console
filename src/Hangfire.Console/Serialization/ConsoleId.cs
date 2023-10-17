@@ -9,7 +9,7 @@ internal class ConsoleId : IEquatable<ConsoleId>
 {
     private static readonly DateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    private string _cachedString;
+    private string? _cachedString;
 
     /// <summary>
     ///     Initializes an instance of <see cref="ConsoleId" />
@@ -59,7 +59,7 @@ internal class ConsoleId : IEquatable<ConsoleId>
     public DateTime DateValue => UnixEpoch.AddMilliseconds(Timestamp);
 
     /// <inheritdoc />
-    public bool Equals(ConsoleId other)
+    public bool Equals(ConsoleId? other)
     {
         if (ReferenceEquals(other, null))
         {
@@ -133,7 +133,7 @@ internal class ConsoleId : IEquatable<ConsoleId>
     }
 
     /// <inheritdoc />
-    public override bool Equals(object obj) => Equals(obj as ConsoleId);
+    public override bool Equals(object? obj) => Equals(obj as ConsoleId);
 
     /// <inheritdoc />
     public override int GetHashCode() => (JobId.GetHashCode() * 17) ^ Timestamp.GetHashCode();

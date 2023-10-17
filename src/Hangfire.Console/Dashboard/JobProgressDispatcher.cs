@@ -25,7 +25,7 @@ internal class JobProgressDispatcher : IDashboardDispatcher
     // ReSharper disable once NotAccessedField.Local
     private readonly ConsoleOptions _options;
 
-    public JobProgressDispatcher(ConsoleOptions options)
+    public JobProgressDispatcher(ConsoleOptions? options)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }

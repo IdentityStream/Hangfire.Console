@@ -15,9 +15,7 @@ public class ProgressBarDto : LineDto
     {
         Id = int.Parse(line.Message, CultureInfo.InvariantCulture);
         Name = line.ProgressName;
-
-        // ReSharper disable once PossibleInvalidOperationException
-        Progress = line.ProgressValue.Value;
+        Progress = line.ProgressValue!.Value;
     }
 
     /// <inheritdoc />
@@ -31,7 +29,7 @@ public class ProgressBarDto : LineDto
     /// <summary>
     ///     Returns optional name for a progress bar
     /// </summary>
-    public string Name { get; }
+    public string? Name { get; }
 
     /// <summary>
     ///     Returns progress value for a progress bar

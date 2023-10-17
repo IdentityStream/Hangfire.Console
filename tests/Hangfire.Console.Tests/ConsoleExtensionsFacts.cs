@@ -35,7 +35,7 @@ public class ConsoleExtensionsFacts
     [Fact]
     public void WriteLine_DoesNotFail_IfContextIsNull()
     {
-        ConsoleExtensions.WriteLine(null, "");
+        ConsoleExtensions.WriteLine(null!, "");
 
         _transaction.Verify(x => x.Commit(), Times.Never);
     }
@@ -64,7 +64,7 @@ public class ConsoleExtensionsFacts
     [Fact]
     public void WriteProgressBar_ReturnsNoOp_IfContextIsNull()
     {
-        var progressBar = ConsoleExtensions.WriteProgressBar(null);
+        var progressBar = ConsoleExtensions.WriteProgressBar(null!);
 
         Assert.IsType<NoOpProgressBar>(progressBar);
         _transaction.Verify(x => x.Commit(), Times.Never);

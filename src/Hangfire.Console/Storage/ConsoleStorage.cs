@@ -76,7 +76,7 @@ internal class ConsoleStorage : IConsoleStorage
 
         // check if encoded message fits into Set's Value field
 
-        string value;
+        string? value;
 
         if (line.Message.Length > ValueFieldLimit - 36)
         {
@@ -212,7 +212,7 @@ internal class ConsoleStorage : IConsoleStorage
         }
     }
 
-    public StateData GetState(ConsoleId consoleId)
+    public StateData? GetState(ConsoleId consoleId)
     {
         if (consoleId == null)
         {

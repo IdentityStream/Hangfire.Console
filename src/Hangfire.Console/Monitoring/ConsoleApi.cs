@@ -34,7 +34,7 @@ internal class ConsoleApi : IConsoleApi
 
         if (count > 0)
         {
-            Dictionary<string, ProgressBarDto> progressBars = null;
+            Dictionary<string, ProgressBarDto>? progressBars = null;
 
             foreach (var entry in _storage.GetLines(consoleId, 0, count))
             {

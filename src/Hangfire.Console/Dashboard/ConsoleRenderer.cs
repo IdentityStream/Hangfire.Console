@@ -104,7 +104,7 @@ internal static class ConsoleRenderer
 
         if (isProgressBar)
         {
-            builder.AppendFormat(CultureInfo.InvariantCulture, "<div class=\"pv\" style=\"width:{0:0.#}%\" data-value=\"{0:f0}\"></div>", line.ProgressValue.Value);
+            builder.AppendFormat(CultureInfo.InvariantCulture, "<div class=\"pv\" style=\"width:{0:0.#}%\" data-value=\"{0:f0}\"></div>", line.ProgressValue!.Value);
         }
         else
         {
@@ -120,7 +120,7 @@ internal static class ConsoleRenderer
     /// <param name="builder">Buffer</param>
     /// <param name="lines">Lines</param>
     /// <param name="timestamp">Reference timestamp for time offset</param>
-    public static void RenderLines(StringBuilder builder, IEnumerable<ConsoleLine> lines, DateTime timestamp)
+    public static void RenderLines(StringBuilder builder, IEnumerable<ConsoleLine>? lines, DateTime timestamp)
     {
         if (builder == null)
         {
@@ -179,7 +179,7 @@ internal static class ConsoleRenderer
     ///     On completion, <paramref name="start" /> is set to the end of the current batch,
     ///     and can be used for next requests (or set to -1, if the job has finished processing).
     /// </remarks>
-    private static IEnumerable<ConsoleLine> ReadLines(IConsoleStorage storage, ConsoleId consoleId, ref int start)
+    private static IEnumerable<ConsoleLine>? ReadLines(IConsoleStorage storage, ConsoleId consoleId, ref int start)
     {
         if (start < 0)
         {
@@ -193,7 +193,7 @@ internal static class ConsoleRenderer
         {
             // has some new items to fetch
 
-            Dictionary<string, ConsoleLine> progressBars = null;
+            Dictionary<string, ConsoleLine>? progressBars = null;
 
             foreach (var entry in storage.GetLines(consoleId, start, count - 1))
             {

@@ -101,5 +101,5 @@ public class ConsoleTextColor
     /// <summary>
     ///     Implicitly converts <see cref="ConsoleTextColor" /> to <see cref="string" />.
     /// </summary>
-    public static implicit operator string(ConsoleTextColor color) => color?._color;
+    public static implicit operator string?(ConsoleTextColor? color) => color?._color;
 }

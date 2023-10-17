@@ -154,7 +154,7 @@ public class ConsoleRendererFacts
     [Fact]
     public void RenderLines_ThrowsException_IfBuilderIsNull()
     {
-        Assert.Throws<ArgumentNullException>("builder", () => ConsoleRenderer.RenderLines(null, Enumerable.Empty<ConsoleLine>(), DateTime.UtcNow));
+        Assert.Throws<ArgumentNullException>("builder", () => ConsoleRenderer.RenderLines(null!, Enumerable.Empty<ConsoleLine>(), DateTime.UtcNow));
     }
 
     [Fact]
@@ -194,19 +194,19 @@ public class ConsoleRendererFacts
     [Fact]
     public void RenderLineBuffer_ThrowsException_IfBuilderIsNull()
     {
-        Assert.Throws<ArgumentNullException>("builder", () => ConsoleRenderer.RenderLineBuffer(null, _storage.Object, _consoleId, 0));
+        Assert.Throws<ArgumentNullException>("builder", () => ConsoleRenderer.RenderLineBuffer(null!, _storage.Object, _consoleId, 0));
     }
 
     [Fact]
     public void RenderLineBuffer_ThrowsException_IfStorageIsNull()
     {
-        Assert.Throws<ArgumentNullException>("storage", () => ConsoleRenderer.RenderLineBuffer(new StringBuilder(), null, _consoleId, 0));
+        Assert.Throws<ArgumentNullException>("storage", () => ConsoleRenderer.RenderLineBuffer(new StringBuilder(), null!, _consoleId, 0));
     }
 
     [Fact]
     public void RenderLineBuffer_ThrowsException_IfConsoleIdIsNull()
     {
-        Assert.Throws<ArgumentNullException>("consoleId", () => ConsoleRenderer.RenderLineBuffer(new StringBuilder(), _storage.Object, null, 0));
+        Assert.Throws<ArgumentNullException>("consoleId", () => ConsoleRenderer.RenderLineBuffer(new StringBuilder(), _storage.Object, null!, 0));
     }
 
     [Fact]
@@ -332,7 +332,7 @@ public class ConsoleRendererFacts
         }
     };
 
-    private void SetupStorage(StateData stateData, params ConsoleLine[] lines)
+    private void SetupStorage(StateData? stateData, params ConsoleLine[] lines)
     {
         _storage.Setup(x => x.GetState(It.IsAny<ConsoleId>()))
             .Returns(stateData);

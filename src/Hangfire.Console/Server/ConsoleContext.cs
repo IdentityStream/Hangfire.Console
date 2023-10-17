@@ -29,11 +29,11 @@ internal class ConsoleContext
         _storage.InitConsole(_consoleId);
     }
 
-    public ConsoleTextColor TextColor { get; set; }
+    public ConsoleTextColor? TextColor { get; set; }
 
-    public static ConsoleContext FromPerformContext(PerformContext context)
+    public static ConsoleContext? FromPerformContext(PerformContext? context)
     {
-        if (context == null)
+        if (context is null)
         {
             // PerformContext might be null because of refactoring, or during tests
             return null;
@@ -71,12 +71,12 @@ internal class ConsoleContext
         }
     }
 
-    public void WriteLine(string value, ConsoleTextColor color)
+    public void WriteLine(string? value, ConsoleTextColor? color)
     {
         AddLine(new ConsoleLine { Message = value ?? "", TextColor = color ?? TextColor });
     }
 
-    public IProgressBar WriteProgressBar(string name, double value, ConsoleTextColor color)
+    public IProgressBar WriteProgressBar(string? name, double value, ConsoleTextColor? color)
     {
         var progressBarId = Interlocked.Increment(ref _nextProgressBarId);
 

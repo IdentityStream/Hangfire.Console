@@ -21,7 +21,7 @@ public static class GlobalConfigurationExtensions
     /// </summary>
     /// <param name="configuration">Global configuration</param>
     /// <param name="options">Options for console</param>
-    public static IGlobalConfiguration UseConsole(this IGlobalConfiguration configuration, ConsoleOptions options = null)
+    public static IGlobalConfiguration UseConsole(this IGlobalConfiguration configuration, ConsoleOptions? options = null)
     {
         if (configuration == null)
         {
