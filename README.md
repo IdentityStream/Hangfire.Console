@@ -1,10 +1,14 @@
-# Hangfire.Console
+# IdentityStream.Hangfire.Console
 
-[![Build status](https://ci.appveyor.com/api/projects/status/b57hb7438d7dvxa2/branch/master?svg=true&passingText=master%20%u2714)](https://ci.appveyor.com/project/pieceofsummer/hangfire-console/branch/master)
-[![NuGet](https://img.shields.io/nuget/v/Hangfire.Console.svg)](https://www.nuget.org/packages/Hangfire.Console/)
+[![Build Status](https://github.com/IdentityStream/Hangfire.Console/actions/workflows/dotnet.yml/badge.svg)](https://github.com/IdentityStream/Hangfire.Console/actions/workflows/dotnet.yml)
+[![NuGet](https://img.shields.io/nuget/v/IdentityStream.Hangfire.Console.svg)](https://www.nuget.org/packages/IdentityStream.Hangfire.Console/)
 ![MIT License](https://img.shields.io/badge/license-MIT-orange.svg)
 
 Inspired by AppVeyor, Hangfire.Console provides a console-like logging experience for your jobs.
+
+> [!IMPORTANT]
+> As [Hangfire.Console](https://github.com/pieceofsummer/Hangfire.Console) seems to be abandoned, this is a fork with some crucial bugfixes.
+> If, at some point in the future, the main project comes back to life, these fixes should probably be merged back upstream.
 
 ![dashboard](dashboard.png)
 
@@ -134,6 +138,7 @@ the extension method).
 ## License
 
 Copyright (c) 2016 Alexey Skalozub
+Copyright (c) 2023 IdentityStream AS
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

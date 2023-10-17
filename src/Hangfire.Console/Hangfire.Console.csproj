@@ -1,16 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Description>Job console for Hangfire</Description>
-        <AssemblyTitle>Hangfire.Console</AssemblyTitle>
-        <VersionPrefix>1.4.2</VersionPrefix>
-        <Authors>Alexey Skalozub</Authors>
+        <AssemblyTitle>IdentityStream.Hangfire.Console</AssemblyTitle>
+        <Authors>Alexey Skalozub;IdentityStream AS</Authors>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <AssemblyName>Hangfire.Console</AssemblyName>
-        <PackageId>Hangfire.Console</PackageId>
+        <AssemblyName>IdentityStream.Hangfire.Console</AssemblyName>
+        <PackageId>IdentityStream.Hangfire.Console</PackageId>
         <PackageTags>hangfire;console;logging</PackageTags>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <MinVerDefaultPreReleaseIdentifiers>beta.0</MinVerDefaultPreReleaseIdentifiers>
+        <MinVerTagPrefix>v</MinVerTagPrefix>
+        <IncludeSymbols>true</IncludeSymbols>
         <PackageReleaseNotes>History:
+            v1.5.0:
+            • Calling UseConsole more than once will no longer throw
+
             v1.4.2:
             • Added StringFormatMethod attributes on WriteLine methods (for better intellisense)
 
@@ -103,14 +110,16 @@
             v1.0.0:
             • Initial release
         </PackageReleaseNotes>
-        <PackageIconUrl>https://raw.githubusercontent.com/pieceofsummer/Hangfire.Console/master/hangfire.console.png</PackageIconUrl>
-        <PackageLicenseUrl>https://raw.githubusercontent.com/pieceofsummer/Hangfire.Console/master/LICENSE.md</PackageLicenseUrl>
+        <PackageIcon>hangfire.console.png</PackageIcon>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/pieceofsummer/Hangfire.Console</RepositoryUrl>
-        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <RepositoryUrl>https://github.com/IdentityStream/Hangfire.Console</RepositoryUrl>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../../hangfire.console.png" Pack="true" PackagePath="/" />
+        <None Include="../../README.md" Pack="true" PackagePath="/" />
+    </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Include="Resources\*"/>
@@ -118,6 +127,14 @@
 
     <ItemGroup>
         <PackageReference Include="Hangfire.Core" Version="1.8.5"/>
-        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" PrivateAssets="All"/>
+        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MinVer" Version="4.3.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 </Project>
