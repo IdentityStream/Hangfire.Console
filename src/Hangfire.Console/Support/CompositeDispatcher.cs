@@ -3,41 +3,46 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 // ReSharper disable once CheckNamespace
-namespace Hangfire.Dashboard.Extensions
+namespace Hangfire.Dashboard.Extensions;
+
+/// <summary>
+///     Dispatcher that combines output from several other dispatchers.
+///     Used internally by <see cref="RouteCollectionExtensions.Append" />.
+/// </summary>
+internal class CompositeDispatcher : IDashboardDispatcher
 {
-    /// <summary>
-    /// Dispatcher that combines output from several other dispatchers.
-    /// Used internally by <see cref="RouteCollectionExtensions.Append"/>.
-    /// </summary>
-    internal class CompositeDispatcher : IDashboardDispatcher
+    private readonly List<IDashboardDispatcher> _dispatchers;
+
+    public CompositeDispatcher(params IDashboardDispatcher[] dispatchers)
     {
-        private readonly List<IDashboardDispatcher> _dispatchers;
+        _dispatchers = new List<IDashboardDispatcher>(dispatchers);
+    }
 
-        public CompositeDispatcher(params IDashboardDispatcher[] dispatchers)
+    public async Task Dispatch(DashboardContext context)
+    {
+        if (context == null)
         {
-            _dispatchers = new List<IDashboardDispatcher>(dispatchers);
+            throw new ArgumentNullException(nameof(context));
         }
 
-        public void AddDispatcher(IDashboardDispatcher dispatcher)
+        if (_dispatchers.Count == 0)
         {
-            if (dispatcher == null)
-                throw new ArgumentNullException(nameof(dispatcher));
-            
-            _dispatchers.Add(dispatcher);
+            throw new InvalidOperationException("CompositeDispatcher should contain at least one dispatcher");
         }
 
-        public async Task Dispatch(DashboardContext context)
+        foreach (var dispatcher in _dispatchers)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
-            if (_dispatchers.Count == 0)
-                throw new InvalidOperationException("CompositeDispatcher should contain at least one dispatcher");
-
-            foreach (var dispatcher in _dispatchers)
-            {
-                await dispatcher.Dispatch(context);
-            }
+            await dispatcher.Dispatch(context);
         }
+    }
+
+    public void AddDispatcher(IDashboardDispatcher dispatcher)
+    {
+        if (dispatcher == null)
+        {
+            throw new ArgumentNullException(nameof(dispatcher));
+        }
+
+        _dispatchers.Add(dispatcher);
     }
 }

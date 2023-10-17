@@ -2,169 +2,173 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Hangfire.Console.Progress
+namespace Hangfire.Console.Progress;
+
+/// <summary>
+///     Non-generic version of <see cref="IEnumerable" /> wrapper.
+/// </summary>
+internal class ProgressEnumerable : IEnumerable
 {
-    /// <summary>
-    /// Non-generic version of <see cref="IEnumerable"/> wrapper.
-    /// </summary>
-    internal class ProgressEnumerable : IEnumerable
+    private readonly int _count;
+
+    private readonly IEnumerable _enumerable;
+
+    private readonly IProgressBar _progressBar;
+
+    public ProgressEnumerable(IEnumerable enumerable, IProgressBar progressBar, int count)
     {
-        private readonly IEnumerable _enumerable;
-        private readonly IProgressBar _progressBar;
-        private readonly int _count;
-
-        public ProgressEnumerable(IEnumerable enumerable, IProgressBar progressBar, int count)
+        if (count < 0)
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-
-            _enumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
-            _progressBar = progressBar ?? throw new ArgumentNullException(nameof(progressBar));
-            _count = count;
+            throw new ArgumentOutOfRangeException(nameof(count));
         }
 
-        public IEnumerator GetEnumerator()
-        {
-            return new Enumerator(_enumerable.GetEnumerator(), _progressBar, _count);
-        }
-
-        private class Enumerator : IEnumerator, IDisposable
-        {
-            private readonly IEnumerator _enumerator;
-            private readonly IProgressBar _progressBar;
-            private int _count, _index;
-
-            public Enumerator(IEnumerator enumerator, IProgressBar progressBar, int count)
-            {
-                _enumerator = enumerator;
-                _progressBar = progressBar;
-                _count = count;
-                _index = -1;
-            }
-            
-            public object Current => _enumerator.Current;
-
-            public void Dispose()
-            {
-                try
-                {
-                    (_enumerator as IDisposable)?.Dispose();
-                }
-                finally
-                {
-                    _progressBar.SetValue(100);
-                }
-            }
-
-            public bool MoveNext()
-            {
-                var r = _enumerator.MoveNext();
-                if (r)
-                {
-                    _index++;
-
-                    if (_index >= _count)
-                    {
-                        // adjust maxCount if overrunned
-                        _count = _index + 1;
-                    }
-
-                    _progressBar.SetValue(_index * 100.0 / _count);
-                }
-                return r;
-            }
-
-            public void Reset()
-            {
-                _enumerator.Reset();
-                _index = -1;
-            }
-        }
+        _enumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
+        _progressBar = progressBar ?? throw new ArgumentNullException(nameof(progressBar));
+        _count = count;
     }
 
-    /// <summary>
-    /// Generic version of <see cref="IEnumerable{T}"/> wrapper.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    internal class ProgressEnumerable<T> : IEnumerable<T>
+    public IEnumerator GetEnumerator() => new Enumerator(_enumerable.GetEnumerator(), _progressBar, _count);
+
+    private class Enumerator : IEnumerator, IDisposable
     {
-        private readonly IEnumerable<T> _enumerable;
+        private readonly IEnumerator _enumerator;
+
         private readonly IProgressBar _progressBar;
-        private readonly int _count;
 
-        public ProgressEnumerable(IEnumerable<T> enumerable, IProgressBar progressBar, int count)
+        private int _count, _index;
+
+        public Enumerator(IEnumerator enumerator, IProgressBar progressBar, int count)
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-
-            _enumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
-            _progressBar = progressBar ?? throw new ArgumentNullException(nameof(progressBar));
+            _enumerator = enumerator;
+            _progressBar = progressBar;
             _count = count;
+            _index = -1;
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public void Dispose()
         {
-            return new Enumerator(_enumerable.GetEnumerator(), _progressBar, _count);
+            try
+            {
+                (_enumerator as IDisposable)?.Dispose();
+            }
+            finally
+            {
+                _progressBar.SetValue(100);
+            }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public object Current => _enumerator.Current;
+
+        public bool MoveNext()
         {
-            return new Enumerator(_enumerable.GetEnumerator(), _progressBar, _count);
+            var r = _enumerator.MoveNext();
+            if (r)
+            {
+                _index++;
+
+                if (_index >= _count)
+                {
+                    // adjust maxCount if overrunned
+                    _count = _index + 1;
+                }
+
+                _progressBar.SetValue(_index * 100.0 / _count);
+            }
+
+            return r;
         }
 
-        private class Enumerator : IEnumerator<T>
+        public void Reset()
         {
-            private readonly IEnumerator<T> _enumerator;
-            private readonly IProgressBar _progressBar;
-            private int _count, _index;
+            _enumerator.Reset();
+            _index = -1;
+        }
+    }
+}
 
-            public Enumerator(IEnumerator<T> enumerator, IProgressBar progressBar, int count)
+/// <summary>
+///     Generic version of <see cref="IEnumerable{T}" /> wrapper.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+internal class ProgressEnumerable<T> : IEnumerable<T>
+{
+    private readonly int _count;
+
+    private readonly IEnumerable<T> _enumerable;
+
+    private readonly IProgressBar _progressBar;
+
+    public ProgressEnumerable(IEnumerable<T> enumerable, IProgressBar progressBar, int count)
+    {
+        if (count < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(count));
+        }
+
+        _enumerable = enumerable ?? throw new ArgumentNullException(nameof(enumerable));
+        _progressBar = progressBar ?? throw new ArgumentNullException(nameof(progressBar));
+        _count = count;
+    }
+
+    public IEnumerator<T> GetEnumerator() => new Enumerator(_enumerable.GetEnumerator(), _progressBar, _count);
+
+    IEnumerator IEnumerable.GetEnumerator() => new Enumerator(_enumerable.GetEnumerator(), _progressBar, _count);
+
+    private class Enumerator : IEnumerator<T>
+    {
+        private readonly IEnumerator<T> _enumerator;
+
+        private readonly IProgressBar _progressBar;
+
+        private int _count, _index;
+
+        public Enumerator(IEnumerator<T> enumerator, IProgressBar progressBar, int count)
+        {
+            _enumerator = enumerator;
+            _progressBar = progressBar;
+            _count = count;
+            _index = -1;
+        }
+
+        public T Current => _enumerator.Current;
+
+        object IEnumerator.Current => ((IEnumerator)_enumerator).Current;
+
+        public void Dispose()
+        {
+            try
             {
-                _enumerator = enumerator;
-                _progressBar = progressBar;
-                _count = count;
-                _index = -1;
+                _enumerator.Dispose();
             }
-
-            public T Current => _enumerator.Current;
-
-            object IEnumerator.Current => ((IEnumerator)_enumerator).Current;
-
-            public void Dispose()
+            finally
             {
-                try
+                _progressBar.SetValue(100);
+            }
+        }
+
+        public bool MoveNext()
+        {
+            var r = _enumerator.MoveNext();
+            if (r)
+            {
+                _index++;
+
+                if (_index >= _count)
                 {
-                    _enumerator.Dispose();
+                    // adjust maxCount if overrunned
+                    _count = _index + 1;
                 }
-                finally
-                {
-                    _progressBar.SetValue(100);
-                }
+
+                _progressBar.SetValue(_index * 100.0 / _count);
             }
 
-            public bool MoveNext()
-            {
-                var r = _enumerator.MoveNext();
-                if (r)
-                {
-                    _index++;
+            return r;
+        }
 
-                    if (_index >= _count)
-                    {
-                        // adjust maxCount if overrunned
-                        _count = _index + 1;
-                    }
-
-                    _progressBar.SetValue(_index * 100.0 / _count);
-                }
-                return r;
-            }
-
-            public void Reset()
-            {
-                _enumerator.Reset();
-                _index = -1;
-            }
+        public void Reset()
+        {
+            _enumerator.Reset();
+            _index = -1;
         }
     }
 }

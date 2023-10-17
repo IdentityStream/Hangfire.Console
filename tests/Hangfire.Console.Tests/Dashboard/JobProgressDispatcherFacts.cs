@@ -3,23 +3,22 @@ using Hangfire.Console.Dashboard;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Hangfire.Console.Tests.Dashboard
+namespace Hangfire.Console.Tests.Dashboard;
+
+public class JobProgressDispatcherFacts
 {
-    public class JobProgressDispatcherFacts
+    [Fact]
+    public void JsonSettings_PreservesDictionaryKeyCase()
     {
-        [Fact]
-        public void JsonSettings_PreservesDictionaryKeyCase()
+        var result = new Dictionary<string, double>
         {
-            var result = new Dictionary<string, double>
-            {
-                ["AAA"] = 1.0,
-                ["Bbb"] = 2.0,
-                ["ccc"] = 3.0
-            };
+            ["AAA"] = 1.0,
+            ["Bbb"] = 2.0,
+            ["ccc"] = 3.0
+        };
 
-            var json = JsonConvert.SerializeObject(result, JobProgressDispatcher.JsonSettings);
+        var json = JsonConvert.SerializeObject(result, JobProgressDispatcher.JsonSettings);
 
-            Assert.Equal("{\"AAA\":1.0,\"Bbb\":2.0,\"ccc\":3.0}", json);
-        }
+        Assert.Equal("{\"AAA\":1.0,\"Bbb\":2.0,\"ccc\":3.0}", json);
     }
 }

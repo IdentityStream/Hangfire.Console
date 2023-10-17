@@ -1,20 +1,19 @@
-﻿namespace Hangfire.Console.Progress
+﻿namespace Hangfire.Console.Progress;
+
+/// <summary>
+///     Progress bar line inside console.
+/// </summary>
+public interface IProgressBar
 {
     /// <summary>
-    /// Progress bar line inside console.
+    ///     Updates a value of a progress bar.
     /// </summary>
-    public interface IProgressBar
-    {
-        /// <summary>
-        /// Updates a value of a progress bar.
-        /// </summary>
-        /// <param name="value">New value</param>
-        void SetValue(int value);
+    /// <param name="value">New value</param>
+    void SetValue(int value);
 
-        /// <summary>
-        /// Updates a value of a progress bar.
-        /// </summary>
-        /// <param name="value">New value</param>
-        void SetValue(double value);
-    }
+    /// <summary>
+    ///     Updates a value of a progress bar.
+    /// </summary>
+    /// <param name="value">New value</param>
+    void SetValue(double value);
 }

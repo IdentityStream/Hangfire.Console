@@ -1,26 +1,25 @@
-﻿using Hangfire.Console.Serialization;
-using System;
+﻿using System;
+using Hangfire.Console.Serialization;
 using JetBrains.Annotations;
 
-namespace Hangfire.Console.Monitoring
+namespace Hangfire.Console.Monitoring;
+
+/// <summary>
+///     Text console line
+/// </summary>
+[PublicAPI]
+public class TextLineDto : LineDto
 {
-    /// <summary>
-    /// Text console line
-    /// </summary>
-    [PublicAPI]
-    public class TextLineDto : LineDto
+    internal TextLineDto(ConsoleLine line, DateTime referenceTimestamp) : base(line, referenceTimestamp)
     {
-        internal TextLineDto(ConsoleLine line, DateTime referenceTimestamp) : base(line, referenceTimestamp)
-        {
-            Text = line.Message;
-        }
-
-        /// <inheritdoc />
-        public override LineType Type => LineType.Text;
-
-        /// <summary>
-        /// Returns text for the console line
-        /// </summary>
-        public string Text { get; }
+        Text = line.Message;
     }
+
+    /// <inheritdoc />
+    public override LineType Type => LineType.Text;
+
+    /// <summary>
+    ///     Returns text for the console line
+    /// </summary>
+    public string Text { get; }
 }

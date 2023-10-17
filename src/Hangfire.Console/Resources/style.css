@@ -139,13 +139,15 @@ body {
     opacity: 0;
     animation: fadeIn 0.4s ease-out forwards;
 
-    /* IE9 knows opacity (but not animation), and hides the line. 
+    /* IE9 knows opacity (but not animation), and hides the line.
        As a workaround, override this with IE-specific attribute. */
     filter: alpha(opacity=100);
 }
 
 @keyframes fadeIn {
-    to { opacity: 1; }
+    to {
+        opacity: 1;
+    }
 }
 
 /* !!! The following two blocks are important for smooth text animation !!! */
@@ -155,7 +157,7 @@ body {
     -webkit-font-smoothing: subpixel-antialiased;
 }
 
-.console.active .line.new, 
+.console.active .line.new,
 .console.active .line.new > span[data-moment-title] {
     background-color: inherit;
 }
@@ -188,7 +190,9 @@ body {
 }
 
 @keyframes loadingDots {
-    to { width: 27px; }
+    to {
+        width: 27px;
+    }
 }
 
 .progress-circle {

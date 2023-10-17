@@ -5,17 +5,16 @@ using System.Linq.Expressions;
 using Moq;
 
 // ReSharper disable once CheckNamespace
-namespace Hangfire.Console.Tests
-{
-    public static class It2
-    {
-        public static IEnumerable<TValue> AnyIs<TValue>(Expression<Func<TValue, bool>> match)
-        {
-            var predicate = match.Compile();
+namespace Hangfire.Console.Tests;
 
-            return Match.Create(
-                values => values.Any(predicate),
-                () => AnyIs(match));
-        }
+public static class It2
+{
+    public static IEnumerable<TValue> AnyIs<TValue>(Expression<Func<TValue, bool>> match)
+    {
+        var predicate = match.Compile();
+
+        return Match.Create(
+            values => values.Any(predicate),
+            () => AnyIs(match));
     }
 }

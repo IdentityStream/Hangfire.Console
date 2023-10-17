@@ -10,7 +10,7 @@
                 var $this = $(this),
                     time = moment($this.data('moment-title'), 'X');
                 $this.prop('title', time.format('llll'))
-                     .attr('data-container', 'body');
+                    .attr('data-container', 'body');
             });
         }
 
@@ -53,7 +53,7 @@
                 var $pv = $(".pv", $this);
 
                 pv.attr("style", $pv.attr("style"))
-                  .attr("data-value", $pv.attr("data-value"));
+                    .attr("data-value", $pv.attr("data-value"));
                 $this.addClass("ignore");
             });
 
@@ -122,12 +122,14 @@
             this._polling = true;
             this._el.addClass('active');
 
-            resizeHandler( { target: this._buffer.getHTMLElement() } );
+            resizeHandler({target: this._buffer.getHTMLElement()});
             window.addResizeListener(this._buffer.getHTMLElement(), resizeHandler);
 
             console.log("polling was started");
 
-            setTimeout(function () { self._poll(); }, pollInterval);
+            setTimeout(function () {
+                self._poll();
+            }, pollInterval);
         };
 
         Console.prototype._poll = function () {
@@ -147,7 +149,7 @@
 
             var self = this;
 
-            $.get(pollUrl + this._id, { start: next }, function (data) {
+            $.get(pollUrl + this._id, {start: next}, function (data) {
                 var $data = $(data),
                     buffer = new hangfire.LineBuffer($data),
                     newLines = $(".line:not(.pb)", $data);
@@ -155,9 +157,11 @@
                 self._el.toggleClass("waiting", newLines.length === 0);
             }, "html")
 
-            .always(function () {
-                setTimeout(function () { self._poll(); }, pollInterval);
-            });
+                .always(function () {
+                    setTimeout(function () {
+                        self._poll();
+                    }, pollInterval);
+                });
         };
 
         Console.prototype._endPoll = function () {
@@ -176,14 +180,14 @@
         function JobProgress(row) {
             if (!row || row.length !== 1)
                 throw new Error("JobProgress expects jQuery object with a single value");
-            
+
             this._row = row;
             this._progress = null;
             this._bar = null;
             this._value = null;
         }
 
-        JobProgress.prototype._create = function() {
+        JobProgress.prototype._create = function () {
             var parent = $('td:last-child', this._row);
             this._progress = $('<div class="progress-circle">\n' +
                 '  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">\n' +
@@ -193,22 +197,22 @@
                 '</div>').prependTo(parent);
             this._bar = $('.bar', this._progress);
         };
-        
-        JobProgress.prototype._destroy = function() {
+
+        JobProgress.prototype._destroy = function () {
             if (this._progress)
                 this._progress.remove();
-            
+
             this._progress = null;
             this._bar = null;
             this._value = null;
         };
 
-        JobProgress.prototype.update = function(value) {
+        JobProgress.prototype.update = function (value) {
             if (typeof value !== 'number' || value < 0) {
                 this._destroy();
                 return;
             }
-            
+
             value = Math.min(Math.round(value), 100);
 
             if (!this._progress) {
@@ -219,16 +223,16 @@
 
             var r = this._bar.attr('r'),
                 c = Math.PI * r * 2;
-            
+
             this._bar.css('stroke-dashoffset', ((100 - value) / 100) * c);
             this._progress.attr('data-value', value);
             this._value = value;
         };
-        
+
         return JobProgress;
     })();
 
-    hangfire.JobProgressPoller = (function() {
+    hangfire.JobProgressPoller = (function () {
         function JobProgressPoller() {
             var jobsProgress = {};
             $(".js-jobs-list-row").each(function () {
@@ -248,8 +252,8 @@
             if (this._jobIds.length === 0) return;
 
             var self = this;
-            this._timerCallback = function() {
-                $.post(pollUrl + 'progress', { 'jobs[]': self._jobIds }, function(data) {
+            this._timerCallback = function () {
+                $.post(pollUrl + 'progress', {'jobs[]': self._jobIds}, function (data) {
                     var jobsProgress = self._jobsProgress;
                     Object.getOwnPropertyNames(data).forEach(function (jobId) {
                         var progress = jobsProgress[jobId],
@@ -265,7 +269,7 @@
                     }
                 });
             };
-            
+
             this._timerId = setTimeout(this._timerCallback, 50);
         };
 
@@ -279,15 +283,15 @@
 
         return JobProgressPoller;
     })();
-    
+
 })(jQuery, window.Hangfire = window.Hangfire || {});
 
 $(function () {
     var path = window.location.pathname;
-    
+
     if (/\/jobs\/details\/([^/]+)$/.test(path)) {
         // execute scripts for /jobs/details/<jobId>
-        
+
         $(".console").each(function (index) {
             var $this = $(this),
                 c = new Hangfire.Console($this);
@@ -306,10 +310,10 @@ $(function () {
         $(".container").on("click", ".console.collapsed", function () {
             $(this).removeClass("collapsed");
         });
-        
+
     } else if (/\/jobs\/processing$/.test(path)) {
         // execute scripts for /jobs/processing
-        
+
         Hangfire.page._jobProgressPoller = new Hangfire.JobProgressPoller();
         Hangfire.page._jobProgressPoller.start();
     }

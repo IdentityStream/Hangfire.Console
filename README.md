@@ -4,20 +4,21 @@
 [![NuGet](https://img.shields.io/nuget/v/Hangfire.Console.svg)](https://www.nuget.org/packages/Hangfire.Console/)
 ![MIT License](https://img.shields.io/badge/license-MIT-orange.svg)
 
-Inspired by AppVeyor, Hangfire.Console provides a console-like logging experience for your jobs. 
+Inspired by AppVeyor, Hangfire.Console provides a console-like logging experience for your jobs.
 
 ![dashboard](dashboard.png)
 
 ## Features
 
- - **Provider-agnostic**: (allegedly) works with any job storage provider (currently tested with SqlServer and MongoDB). 
- - **100% Safe**: no Hangfire-managed data (e.g. jobs, states) is ever updated, hence there's no risk to corrupt it.
- - **With Live Updates**: new messages will appear as they're logged, as if you're looking at real console.
- - (blah-blah-blah)
+- **Provider-agnostic**: (allegedly) works with any job storage provider (currently tested with SqlServer and MongoDB).
+- **100% Safe**: no Hangfire-managed data (e.g. jobs, states) is ever updated, hence there's no risk to corrupt it.
+- **With Live Updates**: new messages will appear as they're logged, as if you're looking at real console.
+- (blah-blah-blah)
 
 ## Setup
 
 In .NET Core's Startup.cs:
+
 ```c#
 public void ConfigureServices(IServiceCollection services)
 {
@@ -30,13 +31,14 @@ public void ConfigureServices(IServiceCollection services)
 ```
 
 Otherwise,
+
 ```c#
 GlobalConfiguration.Configuration
     .UseSqlServerStorage("connectionSting")
     .UseConsole();
 ```
 
-**NOTE**: If you have Dashboard and Server running separately, 
+**NOTE**: If you have Dashboard and Server running separately,
 you'll need to call `UseConsole()` on both.
 
 ### Additional options
@@ -44,6 +46,7 @@ you'll need to call `UseConsole()` on both.
 As usual, you may provide additional options for `UseConsole()` method.
 
 Here's what you can configure:
+
 - **ExpireIn** – time to keep console sessions (default: 24 hours)
 - **FollowJobRetentionPolicy** – expire all console sessions along with parent job (default: true)
 - **PollInterval** – poll interval for live updates, ms (default: 1000)
@@ -51,14 +54,16 @@ Here's what you can configure:
 - **TextColor** – console default text color (default: #ffffff)
 - **TimestampColor** – timestamp text color (default: #00aad7)
 
-**NOTE**: After you initially add Hangfire.Console (or change the options above) you may need to clear browser cache, as generated CSS/JS can be cached by browser.
+**NOTE**: After you initially add Hangfire.Console (or change the options above) you may need to clear browser cache, as
+generated CSS/JS can be cached by browser.
 
 ## Log
 
-Hangfire.Console provides extension methods on `PerformContext` object, 
-hence you'll need to add it as a job argument. 
+Hangfire.Console provides extension methods on `PerformContext` object,
+hence you'll need to add it as a job argument.
 
-**NOTE**: Like `IJobCancellationToken`, `PerformContext` is a special argument type which Hangfire will substitute automatically. You should pass `null` when enqueuing a job.
+**NOTE**: Like `IJobCancellationToken`, `PerformContext` is a special argument type which Hangfire will substitute
+automatically. You should pass `null` when enqueuing a job.
 
 Now you can write to console:
 
@@ -99,11 +104,13 @@ public void TaskMethod(PerformContext context)
 
 You can create multiple progress bars and update them separately.
 
-By default, progress bar is initialized with value `0`. You can specify initial value and progress bar color as optional arguments for `WriteProgressBar()`.
+By default, progress bar is initialized with value `0`. You can specify initial value and progress bar color as optional
+arguments for `WriteProgressBar()`.
 
 ### Enumeration progress
 
-To easily track progress of enumeration over a collection in a for-each loop, library adds an extension method `WithProgress`:
+To easily track progress of enumeration over a collection in a for-each loop, library adds an extension
+method `WithProgress`:
 
 ```c#
 public void TaskMethod(PerformContext context)
@@ -117,9 +124,12 @@ public void TaskMethod(PerformContext context)
 }
 ```
 
-It will automatically update progress bar during enumeration, and will set progress to 100% if for-each loop was interrupted with a `break` instruction.
+It will automatically update progress bar during enumeration, and will set progress to 100% if for-each loop was
+interrupted with a `break` instruction.
 
-**NOTE**: If the number of items in the collection cannot be determined automatically (e.g. collection doesn't implement `ICollection`/`ICollection<T>`/`IReadOnlyCollection<T>`, you'll need to pass additional argument `count` to the extension method).
+**NOTE**: If the number of items in the collection cannot be determined automatically (e.g. collection doesn't
+implement `ICollection`/`ICollection<T>`/`IReadOnlyCollection<T>`, you'll need to pass additional argument `count` to
+the extension method).
 
 ## License
 

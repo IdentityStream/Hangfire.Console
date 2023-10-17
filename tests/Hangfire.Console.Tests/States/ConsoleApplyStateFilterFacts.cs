@@ -1,208 +1,201 @@
-﻿using Hangfire.Common;
+﻿using System;
+using System.Collections.Generic;
+using Hangfire.Common;
 using Hangfire.Console.States;
 using Hangfire.States;
 using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
 using Moq;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
-namespace Hangfire.Console.Tests.States
+namespace Hangfire.Console.Tests.States;
+
+public class ConsoleApplyStateFilterFacts
 {
-    public class ConsoleApplyStateFilterFacts
+    private readonly Mock<JobStorageConnection> _connection;
+
+    private readonly Mock<IMonitoringApi> _monitoring;
+
+    private readonly Mock<IApplyStateFilter> _otherFilter;
+
+    private readonly Mock<JobStorage> _storage;
+
+    private readonly Mock<JobStorageTransaction> _transaction;
+
+    public ConsoleApplyStateFilterFacts()
     {
-        private readonly Mock<IApplyStateFilter> _otherFilter;
-        private readonly Mock<JobStorage> _storage;
-        private readonly Mock<JobStorageConnection> _connection;
-        private readonly Mock<JobStorageTransaction> _transaction;
-        private readonly Mock<IMonitoringApi> _monitoring;
+        _otherFilter = new Mock<IApplyStateFilter>();
+        _storage = new Mock<JobStorage>();
+        _connection = new Mock<JobStorageConnection>();
+        _transaction = new Mock<JobStorageTransaction>();
+        _monitoring = new Mock<IMonitoringApi>();
 
-        public ConsoleApplyStateFilterFacts()
-        {
-            _otherFilter = new Mock<IApplyStateFilter>();
-            _storage = new Mock<JobStorage>();
-            _connection = new Mock<JobStorageConnection>();
-            _transaction = new Mock<JobStorageTransaction>();
-            _monitoring = new Mock<IMonitoringApi>();
+        _storage.Setup(x => x.GetConnection())
+            .Returns(_connection.Object);
+        _storage.Setup(x => x.GetMonitoringApi())
+            .Returns(_monitoring.Object);
 
-            _storage.Setup(x => x.GetConnection())
-                .Returns(_connection.Object);
-            _storage.Setup(x => x.GetMonitoringApi())
-                .Returns(_monitoring.Object);
+        _connection.Setup(x => x.CreateWriteTransaction())
+            .Returns(_transaction.Object);
+    }
 
-            _connection.Setup(x => x.CreateWriteTransaction())
-                .Returns(_transaction.Object);
-        }
+    [Fact]
+    public void UsesFinalJobExpirationTimeoutValue()
+    {
+        _otherFilter.Setup(x => x.OnStateApplied(It.IsAny<ApplyStateContext>(), It.IsAny<IWriteOnlyTransaction>()))
+            .Callback<ApplyStateContext, IWriteOnlyTransaction>((c, _) => c.JobExpirationTimeout = TimeSpan.FromSeconds(123));
+        _connection.Setup(x => x.GetJobData("1"))
+            .Returns(CreateJobData(ProcessingState.StateName));
+        _monitoring.Setup(x => x.JobDetails("1"))
+            .Returns(CreateJobDetails());
 
-        [Fact]
-        public void UsesFinalJobExpirationTimeoutValue()
-        {
-            _otherFilter.Setup(x => x.OnStateApplied(It.IsAny<ApplyStateContext>(), It.IsAny<IWriteOnlyTransaction>()))
-                .Callback<ApplyStateContext, IWriteOnlyTransaction>((c, _) => c.JobExpirationTimeout = TimeSpan.FromSeconds(123));
-            _connection.Setup(x => x.GetJobData("1"))
-                .Returns(CreateJobData(ProcessingState.StateName));
-            _monitoring.Setup(x => x.JobDetails("1"))
-                .Returns(CreateJobDetails());
+        var stateChanger = new BackgroundJobStateChanger(CreateJobFilterProvider());
+        var context = CreateStateChangeContext(new MockSucceededState());
 
-            var stateChanger = new BackgroundJobStateChanger(CreateJobFilterProvider());
-            var context = CreateStateChangeContext(new MockSucceededState());
+        stateChanger.ChangeState(context);
 
-            stateChanger.ChangeState(context);
+        _transaction.Verify(x => x.ExpireJob(It.IsAny<string>(), TimeSpan.FromSeconds(123)));
+        _transaction.Verify(x => x.ExpireSet(It.IsAny<string>(), TimeSpan.FromSeconds(123)));
+    }
 
-            _transaction.Verify(x => x.ExpireJob(It.IsAny<string>(), TimeSpan.FromSeconds(123)));
-            _transaction.Verify(x => x.ExpireSet(It.IsAny<string>(), TimeSpan.FromSeconds(123)));
-        }
+    [Fact]
+    public void DoesNotExpire_IfNotFollowsJobRetention()
+    {
+        _connection.Setup(x => x.GetJobData("1"))
+            .Returns(CreateJobData(ProcessingState.StateName));
+        _monitoring.Setup(x => x.JobDetails("1"))
+            .Returns(CreateJobDetails());
 
-        [Fact]
-        public void DoesNotExpire_IfNotFollowsJobRetention()
-        {
-            _connection.Setup(x => x.GetJobData("1"))
-                .Returns(CreateJobData(ProcessingState.StateName));
-            _monitoring.Setup(x => x.JobDetails("1"))
-                .Returns(CreateJobDetails());
+        var stateChanger = new BackgroundJobStateChanger(CreateJobFilterProvider(false));
+        var context = CreateStateChangeContext(new MockSucceededState());
 
-            var stateChanger = new BackgroundJobStateChanger(CreateJobFilterProvider(false));
-            var context = CreateStateChangeContext(new MockSucceededState());
+        stateChanger.ChangeState(context);
 
-            stateChanger.ChangeState(context);
+        _transaction.Verify(x => x.ExpireSet(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Never);
+        _transaction.Verify(x => x.ExpireHash(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Never);
+    }
 
-            _transaction.Verify(x => x.ExpireSet(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Never);
-            _transaction.Verify(x => x.ExpireHash(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Never);
-        }
+    [Fact]
+    public void Expires_IfStateIsFinal()
+    {
+        _connection.Setup(x => x.GetJobData("1"))
+            .Returns(CreateJobData(ProcessingState.StateName));
+        _monitoring.Setup(x => x.JobDetails("1"))
+            .Returns(CreateJobDetails());
 
-        [Fact]
-        public void Expires_IfStateIsFinal()
-        {
-            _connection.Setup(x => x.GetJobData("1"))
-                .Returns(CreateJobData(ProcessingState.StateName));
-            _monitoring.Setup(x => x.JobDetails("1"))
-                .Returns(CreateJobDetails());
+        var stateChanger = new BackgroundJobStateChanger(CreateJobFilterProvider());
+        var context = CreateStateChangeContext(new MockSucceededState());
 
-            var stateChanger = new BackgroundJobStateChanger(CreateJobFilterProvider());
-            var context = CreateStateChangeContext(new MockSucceededState());
+        stateChanger.ChangeState(context);
 
-            stateChanger.ChangeState(context);
+        _transaction.Verify(x => x.ExpireSet(It.IsAny<string>(), It.IsAny<TimeSpan>()));
+        _transaction.Verify(x => x.ExpireHash(It.IsAny<string>(), It.IsAny<TimeSpan>()));
+    }
 
-            _transaction.Verify(x => x.ExpireSet(It.IsAny<string>(), It.IsAny<TimeSpan>()));
-            _transaction.Verify(x => x.ExpireHash(It.IsAny<string>(), It.IsAny<TimeSpan>()));
-        }
+    [Fact]
+    public void Persists_IfStateIsNotFinal()
+    {
+        _connection.Setup(x => x.GetJobData("1"))
+            .Returns(CreateJobData(ProcessingState.StateName));
+        _monitoring.Setup(x => x.JobDetails("1"))
+            .Returns(CreateJobDetails());
 
-        [Fact]
-        public void Persists_IfStateIsNotFinal()
-        {
-            _connection.Setup(x => x.GetJobData("1"))
-                .Returns(CreateJobData(ProcessingState.StateName));
-            _monitoring.Setup(x => x.JobDetails("1"))
-                .Returns(CreateJobDetails());
+        var stateChanger = new BackgroundJobStateChanger(CreateJobFilterProvider());
+        var context = CreateStateChangeContext(new MockFailedState());
 
-            var stateChanger = new BackgroundJobStateChanger(CreateJobFilterProvider());
-            var context = CreateStateChangeContext(new MockFailedState());
+        stateChanger.ChangeState(context);
 
-            stateChanger.ChangeState(context);
+        _transaction.Verify(x => x.PersistSet(It.IsAny<string>()));
+        _transaction.Verify(x => x.PersistHash(It.IsAny<string>()));
+    }
 
-            _transaction.Verify(x => x.PersistSet(It.IsAny<string>()));
-            _transaction.Verify(x => x.PersistHash(It.IsAny<string>()));
-        }
+    private IJobFilterProvider CreateJobFilterProvider(bool followJobRetention = true)
+    {
+        var filters = new JobFilterCollection();
+        filters.Add(new ConsoleApplyStateFilter(new ConsoleOptions { FollowJobRetentionPolicy = followJobRetention }), int.MaxValue);
+        filters.Add(_otherFilter.Object);
+        return new JobFilterProviderCollection(filters);
+    }
 
-        private IJobFilterProvider CreateJobFilterProvider(bool followJobRetention = true)
-        {
-            var filters = new JobFilterCollection();
-            filters.Add(new ConsoleApplyStateFilter(new ConsoleOptions() { FollowJobRetentionPolicy = followJobRetention }), int.MaxValue);
-            filters.Add(_otherFilter.Object);
-            return new JobFilterProviderCollection(filters);
-        }
+    private StateChangeContext CreateStateChangeContext(IState state) => new(_storage.Object, _connection.Object, "1", state);
 
-        public class MockSucceededState : IState
-        {
-            public string Name => SucceededState.StateName;
-
-            public string Reason => null;
-
-            public bool IsFinal => true;
-
-            public bool IgnoreJobLoadException => false;
-
-            public Dictionary<string, string> SerializeData()
-            {
-                return new Dictionary<string, string>();
-            }
-        }
-
-        public class MockFailedState : IState
-        {
-            public string Name => FailedState.StateName;
-
-            public string Reason => null;
-
-            public bool IsFinal => false;
-
-            public bool IgnoreJobLoadException => false;
-
-            public Dictionary<string, string> SerializeData()
-            {
-                return new Dictionary<string, string>();
-            }
-        }
-
-        private StateChangeContext CreateStateChangeContext(IState state)
-        {
-            return new StateChangeContext(_storage.Object, _connection.Object, "1", state);
-        }
-
-        // ReSharper disable once RedundantDisableWarningComment
+    // ReSharper disable once RedundantDisableWarningComment
 #pragma warning disable xUnit1013
-        public static void JobMethod()
+    public static void JobMethod()
 #pragma warning restore xUnit1013
+    { }
+
+    private JobDetailsDto CreateJobDetails()
+    {
+        var date = DateTime.UtcNow.AddHours(-1);
+        var history = new List<StateHistoryDto>();
+
+        history.Add(new StateHistoryDto
         {
-        }
+            StateName = EnqueuedState.StateName,
+            CreatedAt = date,
+            Data = new Dictionary<string, string>
+            {
+                ["EnqueuedAt"] = JobHelper.SerializeDateTime(date),
+                ["Queue"] = EnqueuedState.DefaultQueue
+            }
+        });
 
-        private JobDetailsDto CreateJobDetails()
+        history.Add(new StateHistoryDto
         {
-            var date = DateTime.UtcNow.AddHours(-1);
-            var history = new List<StateHistoryDto>();
-
-            history.Add(new StateHistoryDto()
+            StateName = ProcessingState.StateName,
+            CreatedAt = date.AddSeconds(2),
+            Data = new Dictionary<string, string>
             {
-                StateName = EnqueuedState.StateName,
-                CreatedAt = date,
-                Data = new Dictionary<string, string>()
-                {
-                    ["EnqueuedAt"] = JobHelper.SerializeDateTime(date),
-                    ["Queue"] = EnqueuedState.DefaultQueue
-                }
-            });
+                ["StartedAt"] = JobHelper.SerializeDateTime(date.AddSeconds(2)),
+                ["ServerId"] = "SERVER-1",
+                ["WorkerId"] = "WORKER-1"
+            }
+        });
 
-            history.Add(new StateHistoryDto()
-            {
-                StateName = ProcessingState.StateName,
-                CreatedAt = date.AddSeconds(2),
-                Data = new Dictionary<string, string>()
-                {
-                    ["StartedAt"] = JobHelper.SerializeDateTime(date.AddSeconds(2)),
-                    ["ServerId"] = "SERVER-1",
-                    ["WorkerId"] = "WORKER-1"
-                }
-            });
+        history.Reverse();
 
-            history.Reverse();
-
-            return new JobDetailsDto()
-            {
-                CreatedAt = history[0].CreatedAt,
-                Job = Job.FromExpression(() => JobMethod()),
-                History = history
-            };
-        }
-
-        private JobData CreateJobData(string state)
+        return new JobDetailsDto
         {
-            return new JobData()
-            {
-                CreatedAt = DateTime.UtcNow.AddHours(-1),
-                Job = Job.FromExpression(() => JobMethod()),
-                State = state
-            };
-        }
+            CreatedAt = history[0].CreatedAt,
+            Job = Job.FromExpression(() => JobMethod()),
+            History = history
+        };
+    }
+
+    private JobData CreateJobData(string state)
+    {
+        return new JobData
+        {
+            CreatedAt = DateTime.UtcNow.AddHours(-1),
+            Job = Job.FromExpression(() => JobMethod()),
+            State = state
+        };
+    }
+
+    public class MockSucceededState : IState
+    {
+        public string Name => SucceededState.StateName;
+
+        public string Reason => null;
+
+        public bool IsFinal => true;
+
+        public bool IgnoreJobLoadException => false;
+
+        public Dictionary<string, string> SerializeData() => new();
+    }
+
+    public class MockFailedState : IState
+    {
+        public string Name => FailedState.StateName;
+
+        public string Reason => null;
+
+        public bool IsFinal => false;
+
+        public bool IgnoreJobLoadException => false;
+
+        public Dictionary<string, string> SerializeData() => new();
     }
 }
