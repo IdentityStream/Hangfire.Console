@@ -57,7 +57,7 @@ internal class ProgressEnumerable : IEnumerable
             }
         }
 
-        public object Current => _enumerator.Current;
+        public object? Current => _enumerator.Current;
 
         public bool MoveNext()
         {
@@ -132,7 +132,7 @@ internal class ProgressEnumerable<T> : IEnumerable<T>
 
         public T Current => _enumerator.Current;
 
-        object IEnumerator.Current => ((IEnumerator)_enumerator).Current;
+        object? IEnumerator.Current => ((IEnumerator)_enumerator).Current;
 
         public void Dispose()
         {
