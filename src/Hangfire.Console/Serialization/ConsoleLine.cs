@@ -20,7 +20,7 @@ internal class ConsoleLine
     ///     Message text, or message reference, or progress bar id
     /// </summary>
     [JsonProperty("s", Required = Required.Always)]
-    public string Message { get; set; } = null!;
+    public required string Message { get; set; }
 
     /// <summary>
     ///     Text color for this message

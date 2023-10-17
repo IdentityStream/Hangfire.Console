@@ -93,7 +93,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentNullException>("consoleId", () => storage.AddLine(null!, new ConsoleLine()));
+        Assert.Throws<ArgumentNullException>("consoleId", () => storage.AddLine(null!, new ConsoleLine{ Message = "" }));
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class ConsoleStorageFacts
     {
         var storage = new ConsoleStorage(_connection.Object);
 
-        Assert.Throws<ArgumentException>("line", () => storage.AddLine(_consoleId, new ConsoleLine { IsReference = true }));
+        Assert.Throws<ArgumentException>("line", () => storage.AddLine(_consoleId, new ConsoleLine { Message = "", IsReference = true }));
     }
 
     [Fact]
