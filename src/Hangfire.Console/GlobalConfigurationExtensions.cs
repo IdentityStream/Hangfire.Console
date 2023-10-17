@@ -28,13 +28,13 @@ public static class GlobalConfigurationExtensions
             throw new ArgumentNullException(nameof(configuration));
         }
 
-        options = options ?? new ConsoleOptions();
+        options ??= new ConsoleOptions();
 
         options.Validate(nameof(options));
 
         if (DashboardRoutes.Routes.Contains("/console/([0-9a-f]{11}.+)"))
         {
-            throw new InvalidOperationException("Console is already initialized");
+            return configuration;
         }
 
         // register server filter for jobs
