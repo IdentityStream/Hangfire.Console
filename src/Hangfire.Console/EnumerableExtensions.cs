@@ -3,12 +3,14 @@ using Hangfire.Server;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Hangfire.Console
 {
     /// <summary>
     /// Provides a set of extension methods to enumerate collections with progress.
     /// </summary>
+    [PublicAPI]
     public static class EnumerableExtensions
     {
         /// <summary>
@@ -55,7 +57,7 @@ namespace Hangfire.Console
 
             return new ProgressEnumerable(enumerable, progressBar, count);
         }
-        
+
         /// <summary>
         /// Returns an <see cref="IEnumerable{T}"/> reporting enumeration progress.
         /// </summary>
@@ -80,7 +82,7 @@ namespace Hangfire.Console
         {
             return WithProgress(enumerable, context.WriteProgressBar(0, color), count);
         }
-        
+
         /// <summary>
         /// Returns an <see cref="IEnumerable{T}"/> reporting enumeration progress.
         /// </summary>

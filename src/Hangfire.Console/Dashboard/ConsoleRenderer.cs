@@ -23,7 +23,7 @@ namespace Hangfire.Console.Dashboard
         private static readonly Regex LinkDetector = new Regex(@"
             \b(?:(?<schema>(?:f|ht)tps?://)|www\.|ftp\.)
               (?:\([-\w+&@#/%=~|$?!:,.]*\)|[-\w+&@#/%=~|$?!:,.])*
-              (?:\([-\w+&@#/%=~|$?!:,.]*\)|[\w+&@#/%=~|$])", 
+              (?:\([-\w+&@#/%=~|$?!:,.]*\)|[\w+&@#/%=~|$])",
             RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private class DummyPage : RazorPage
@@ -41,7 +41,7 @@ namespace Hangfire.Console.Dashboard
         public static void RenderText(StringBuilder buffer, string text)
         {
             if (string.IsNullOrEmpty(text)) return;
-            
+
             var start = 0;
 
             foreach (Match m in LinkDetector.Matches(text))
@@ -55,7 +55,7 @@ namespace Hangfire.Console.Dashboard
                 if (!m.Groups["schema"].Success)
                 {
                     // force schema for links without one (like www.google.com)
-                    schema = m.Value.StartsWith("ftp.", StringComparison.OrdinalIgnoreCase) ? "ftp://" : "http://";
+                    schema = m.Value.StartsWith("ftp.", StringComparison.OrdinalIgnoreCase) ? "ftp://" : "https://";
                 }
 
                 buffer.Append("<a target=\"_blank\" rel=\"nofollow\" href=\"")
@@ -136,7 +136,7 @@ namespace Hangfire.Console.Dashboard
                 RenderLine(builder, line, timestamp);
             }
         }
-        
+
         /// <summary>
         /// Fetches and renders console line buffer.
         /// </summary>
@@ -155,7 +155,7 @@ namespace Hangfire.Console.Dashboard
 
             var items = ReadLines(storage, consoleId, ref start);
 
-            builder.AppendFormat("<div class=\"line-buffer\" data-n=\"{1}\">", consoleId, start);
+            builder.AppendFormat("<div class=\"line-buffer\" data-n=\"{0}\">", start);
             RenderLines(builder, items, consoleId.DateValue);
             builder.Append("</div>");
         }
@@ -167,8 +167,8 @@ namespace Hangfire.Console.Dashboard
         /// <param name="consoleId">Console identifier</param>
         /// <param name="start">Offset to read lines from</param>
         /// <remarks>
-        /// On completion, <paramref name="start"/> is set to the end of the current batch, 
-        /// and can be used for next requests (or set to -1, if the job has finished processing). 
+        /// On completion, <paramref name="start"/> is set to the end of the current batch,
+        /// and can be used for next requests (or set to -1, if the job has finished processing).
         /// </remarks>
         private static IEnumerable<ConsoleLine> ReadLines(IConsoleStorage storage, ConsoleId consoleId, ref int start)
         {
@@ -182,7 +182,7 @@ namespace Hangfire.Console.Dashboard
                 // has some new items to fetch
 
                 Dictionary<string, ConsoleLine> progressBars = null;
-                    
+
                 foreach (var entry in storage.GetLines(consoleId, start, count - 1))
                 {
                     if (entry.ProgressValue.HasValue)

@@ -1,10 +1,10 @@
-﻿using Hangfire.Console.Progress;
+﻿using System;
+using System.Globalization;
+using System.Threading;
+using Hangfire.Console.Progress;
 using Hangfire.Console.Serialization;
 using Hangfire.Console.Storage;
 using Hangfire.Server;
-using System;
-using System.Globalization;
-using System.Threading;
 
 namespace Hangfire.Console.Server
 {
@@ -44,7 +44,7 @@ namespace Hangfire.Console.Server
         }
 
         public ConsoleTextColor TextColor { get; set; }
-        
+
         public void AddLine(ConsoleLine line)
         {
             if (line == null)
@@ -65,10 +65,10 @@ namespace Hangfire.Console.Server
                 _storage.AddLine(_consoleId, line);
             }
         }
-        
+
         public void WriteLine(string value, ConsoleTextColor color)
         {
-            AddLine(new ConsoleLine() { Message = value ?? "", TextColor = color ?? TextColor });
+            AddLine(new ConsoleLine { Message = value ?? "", TextColor = color ?? TextColor });
         }
 
         public IProgressBar WriteProgressBar(string name, double value, ConsoleTextColor color)
@@ -82,7 +82,7 @@ namespace Hangfire.Console.Server
 
             return progressBar;
         }
-        
+
         public void Expire(TimeSpan expireIn)
         {
             _storage.Expire(_consoleId, expireIn);
@@ -97,7 +97,7 @@ namespace Hangfire.Console.Server
                 // Either way, there's no need to expire console here.
                 return;
             }
-            
+
             _storage.Expire(_consoleId, ttl);
         }
     }

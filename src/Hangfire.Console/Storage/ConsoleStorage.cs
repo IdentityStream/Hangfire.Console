@@ -37,15 +37,14 @@ namespace Hangfire.Console.Storage
             // We add an extra "jobId" record into Hash for console,
             // to correctly track TTL even if console contains no lines
 
-            using (var transaction = _connection.CreateWriteTransaction())
-            {
-                if (!(transaction is JobStorageTransaction))
-                    throw new NotSupportedException("Storage tranactions must implement JobStorageTransaction");
+            using var transaction = _connection.CreateWriteTransaction();
 
-                transaction.SetRangeInHash(consoleId.GetHashKey(), new[] { new KeyValuePair<string, string>("jobId", consoleId.JobId) });
+            if (transaction is not JobStorageTransaction)
+                throw new NotSupportedException("Storage tranactions must implement JobStorageTransaction");
 
-                transaction.Commit();
-            }
+            transaction.SetRangeInHash(consoleId.GetHashKey(), new[] { new KeyValuePair<string, string>("jobId", consoleId.JobId) });
+
+            transaction.Commit();
         }
 
         public void AddLine(ConsoleId consoleId, ConsoleLine line)
@@ -57,52 +56,51 @@ namespace Hangfire.Console.Storage
             if (line.IsReference)
                 throw new ArgumentException("Cannot add reference directly", nameof(line));
 
-            using (var tran = _connection.CreateWriteTransaction())
+            using var tran = _connection.CreateWriteTransaction();
+
+            // check if encoded message fits into Set's Value field
+
+            string value;
+
+            if (line.Message.Length > ValueFieldLimit - 36)
             {
-                // check if encoded message fits into Set's Value field
+                // pretty sure it won't fit
+                // (36 is an upper bound for JSON formatting, TimeOffset and TextColor)
+                value = null;
+            }
+            else
+            {
+                // try to encode and see if it fits
+                value = SerializationHelper.Serialize(line);
 
-                string value;
-
-                if (line.Message.Length > ValueFieldLimit - 36)
+                if (value.Length > ValueFieldLimit)
                 {
-                    // pretty sure it won't fit
-                    // (36 is an upper bound for JSON formatting, TimeOffset and TextColor)
                     value = null;
                 }
-                else
-                {
-                    // try to encode and see if it fits
-                    value = SerializationHelper.Serialize(line);
-
-                    if (value.Length > ValueFieldLimit)
-                    {
-                        value = null;
-                    }
-                }
-
-                if (value == null)
-                {
-                    var referenceKey = Guid.NewGuid().ToString("N");
-
-                    tran.SetRangeInHash(consoleId.GetHashKey(), new[] { new KeyValuePair<string, string>(referenceKey, line.Message) });
-
-                    line.Message = referenceKey;
-                    line.IsReference = true;
-
-                    value = SerializationHelper.Serialize(line);
-                }
-
-                tran.AddToSet(consoleId.GetSetKey(), value, line.TimeOffset);
-
-                if (line.ProgressValue.HasValue && line.Message == "1")
-                {
-                    var progress = line.ProgressValue.Value.ToString(CultureInfo.InvariantCulture);
-
-                    tran.SetRangeInHash(consoleId.GetHashKey(), new[] { new KeyValuePair<string, string>("progress", progress) });
-                }
-
-                tran.Commit();
             }
+
+            if (value == null)
+            {
+                var referenceKey = Guid.NewGuid().ToString("N");
+
+                tran.SetRangeInHash(consoleId.GetHashKey(), new[] { new KeyValuePair<string, string>(referenceKey, line.Message) });
+
+                line.Message = referenceKey;
+                line.IsReference = true;
+
+                value = SerializationHelper.Serialize(line);
+            }
+
+            tran.AddToSet(consoleId.GetSetKey(), value, line.TimeOffset);
+
+            if (line.ProgressValue.HasValue && line.Message == "1")
+            {
+                var progress = line.ProgressValue.Value.ToString(CultureInfo.InvariantCulture);
+
+                tran.SetRangeInHash(consoleId.GetHashKey(), new[] { new KeyValuePair<string, string>("progress", progress) });
+            }
+
+            tran.Commit();
         }
 
         public TimeSpan GetConsoleTtl(ConsoleId consoleId)
@@ -118,13 +116,12 @@ namespace Hangfire.Console.Storage
             if (consoleId == null)
                 throw new ArgumentNullException(nameof(consoleId));
 
-            using (var tran = (JobStorageTransaction)_connection.CreateWriteTransaction())
-            using (var expiration = new ConsoleExpirationTransaction(tran))
-            {
-                expiration.Expire(consoleId, expireIn);
+            using var tran = (JobStorageTransaction)_connection.CreateWriteTransaction();
+            using var expiration = new ConsoleExpirationTransaction(tran);
 
-                tran.Commit();
-            }
+            expiration.Expire(consoleId, expireIn);
+
+            tran.Commit();
         }
 
         public int GetLineCount(ConsoleId consoleId)

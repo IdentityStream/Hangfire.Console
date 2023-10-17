@@ -1,11 +1,13 @@
 ﻿using Hangfire.Console.Monitoring;
 using System;
+using JetBrains.Annotations;
 
 namespace Hangfire.Console
 {
     /// <summary>
     /// Provides extension methods for <see cref="JobStorage"/>.
     /// </summary>
+    [PublicAPI]
     public static class JobStorageExtensions
     {
         /// <summary>

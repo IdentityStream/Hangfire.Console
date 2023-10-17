@@ -1,11 +1,13 @@
 ﻿using Hangfire.Console.Serialization;
 using System;
+using JetBrains.Annotations;
 
 namespace Hangfire.Console.Monitoring
 {
     /// <summary>
     /// Text console line
     /// </summary>
+    [PublicAPI]
     public class TextLineDto : LineDto
     {
         internal TextLineDto(ConsoleLine line, DateTime referenceTimestamp) : base(line, referenceTimestamp)

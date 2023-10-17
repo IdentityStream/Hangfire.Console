@@ -1,12 +1,14 @@
 ﻿using Hangfire.Storage.Monitoring;
 using System;
 using System.Collections.Generic;
+using Hangfire.Annotations;
 
 namespace Hangfire.Console.Monitoring
 {
     /// <summary>
     /// Console monitoring API interface
     /// </summary>
+    [PublicAPI]
     public interface IConsoleApi : IDisposable
     {
         /// <summary>

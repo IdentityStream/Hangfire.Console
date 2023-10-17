@@ -17,11 +17,11 @@ namespace Hangfire.Console.Dashboard
     /// </summary>
     internal class JobProgressDispatcher : IDashboardDispatcher
     {
-        internal static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings()
+        internal static readonly JsonSerializerSettings JsonSettings = new()
         {
             ContractResolver = new DefaultContractResolver()
         };
-        
+
         // ReSharper disable once NotAccessedField.Local
         private readonly ConsoleOptions _options;
 
@@ -29,7 +29,7 @@ namespace Hangfire.Console.Dashboard
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
-        
+
         public async Task Dispatch(DashboardContext context)
         {
             if (!"POST".Equals(context.Request.Method, StringComparison.OrdinalIgnoreCase))
@@ -37,33 +37,32 @@ namespace Hangfire.Console.Dashboard
                 context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
                 return;
             }
-            
+
             var result = new Dictionary<string, double>();
 
             var jobIds = await context.Request.GetFormValuesAsync("jobs[]");
             if (jobIds.Count > 0)
             {
                 // there are some jobs to process
-                
-                using (var connection = context.Storage.GetConnection())
-                using (var storage = new ConsoleStorage(connection))
+
+                using var connection = context.Storage.GetConnection();
+                using var storage = new ConsoleStorage(connection);
+
+                foreach (var jobId in jobIds)
                 {
-                    foreach (var jobId in jobIds)
+                    var state = connection.GetStateData(jobId);
+                    if (state != null && string.Equals(state.Name, ProcessingState.StateName, StringComparison.OrdinalIgnoreCase))
                     {
-                        var state = connection.GetStateData(jobId);
-                        if (state != null && string.Equals(state.Name, ProcessingState.StateName, StringComparison.OrdinalIgnoreCase))
-                        {
-                            var consoleId = new ConsoleId(jobId, JobHelper.DeserializeDateTime(state.Data["StartedAt"]));
-                            
-                            var progress = storage.GetProgress(consoleId);
-                            if (progress.HasValue)
-                                result[jobId] = progress.Value;
-                        }
-                        else
-                        {
-                            // return -1 to indicate the job is not in Processing state
-                            result[jobId] = -1;
-                        }
+                        var consoleId = new ConsoleId(jobId, JobHelper.DeserializeDateTime(state.Data["StartedAt"]));
+
+                        var progress = storage.GetProgress(consoleId);
+                        if (progress.HasValue)
+                            result[jobId] = progress.Value;
+                    }
+                    else
+                    {
+                        // return -1 to indicate the job is not in Processing state
+                        result[jobId] = -1;
                     }
                 }
             }

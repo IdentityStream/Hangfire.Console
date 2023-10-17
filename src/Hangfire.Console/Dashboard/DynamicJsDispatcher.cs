@@ -16,12 +16,12 @@ namespace Hangfire.Console.Dashboard
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
-        
+
         public Task Dispatch(DashboardContext context)
         {
             var builder = new StringBuilder();
 
-            builder.Append(@"(function (hangfire) {")
+            builder.Append("(function (hangfire) {")
                    .Append("hangfire.config = hangfire.config || {};")
                    .AppendFormat("hangfire.config.consolePollInterval = {0};", _options.PollInterval)
                    .AppendFormat("hangfire.config.consolePollUrl = '{0}/console/';", context.Request.PathBase)

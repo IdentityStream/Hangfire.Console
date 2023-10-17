@@ -50,18 +50,11 @@ namespace Hangfire.Console.Storage
         /// <param name="consoleId">Console identifier</param>
         /// <param name="expireIn">Expiration time</param>
         void Expire(ConsoleId consoleId, TimeSpan expireIn);
-        
+
         /// <summary>
         /// Returns last (current) state of the console's parent job.
         /// </summary>
         /// <param name="consoleId">Console identifier</param>
         StateData GetState(ConsoleId consoleId);
-
-        /// <summary>
-        /// Returns overall progress of the console (if available).
-        /// </summary>
-        /// <param name="consoleId">Console identifier</param>
-        /// <returns>Progress value</returns>
-        double? GetProgress(ConsoleId consoleId);
     }
 }

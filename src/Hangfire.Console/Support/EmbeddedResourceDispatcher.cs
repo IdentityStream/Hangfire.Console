@@ -13,7 +13,7 @@ namespace Hangfire.Dashboard.Extensions
         private readonly Assembly _assembly;
         private readonly string _resourceName;
         private readonly string _contentType;
-        
+
         public EmbeddedResourceDispatcher(Assembly assembly, string resourceName, string contentType = null)
         {
             if (string.IsNullOrEmpty(resourceName))
@@ -23,7 +23,7 @@ namespace Hangfire.Dashboard.Extensions
             _resourceName = resourceName;
             _contentType = contentType;
         }
-        
+
         public Task Dispatch(DashboardContext context)
         {
             if (!string.IsNullOrEmpty(_contentType))
@@ -44,16 +44,15 @@ namespace Hangfire.Dashboard.Extensions
 
             return WriteResourceAsync(context.Response, _assembly, _resourceName);
         }
-        
+
         private static async Task WriteResourceAsync(DashboardResponse response, Assembly assembly, string resourceName)
         {
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream == null)
-                    throw new ArgumentException($@"Resource '{resourceName}' not found in assembly {assembly}.");
+            using var stream = assembly.GetManifestResourceStream(resourceName);
 
-                await stream.CopyToAsync(response.Body);
-            }
+            if (stream == null)
+                throw new ArgumentException($@"Resource '{resourceName}' not found in assembly {assembly}.");
+
+            await stream.CopyToAsync(response.Body);
         }
     }
 }

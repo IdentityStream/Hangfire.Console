@@ -1,8 +1,11 @@
-﻿namespace Hangfire.Console.Monitoring
+﻿using JetBrains.Annotations;
+
+namespace Hangfire.Console.Monitoring
 {
     /// <summary>
     /// Console line type
     /// </summary>
+    [PublicAPI]
     public enum LineType
     {
         /// <summary>

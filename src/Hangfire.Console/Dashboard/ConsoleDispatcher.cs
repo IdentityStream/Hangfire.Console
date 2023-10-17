@@ -8,17 +8,10 @@ using Hangfire.Console.Storage;
 namespace Hangfire.Console.Dashboard
 {
     /// <summary>
-    /// Provides incremental updates for a console. 
+    /// Provides incremental updates for a console.
     /// </summary>
     internal class ConsoleDispatcher : IDashboardDispatcher
     {
-        private readonly ConsoleOptions _options;
-
-        public ConsoleDispatcher(ConsoleOptions options)
-        {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-        }
-
         public Task Dispatch(DashboardContext context)
         {
             if (context == null)

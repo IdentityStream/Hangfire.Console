@@ -1,10 +1,12 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace Hangfire.Console
 {
     /// <summary>
     /// Configuration options for console.
     /// </summary>
+    [PublicAPI]
     public class ConsoleOptions
     {
         /// <summary>
@@ -17,7 +19,7 @@ namespace Hangfire.Console
         /// When set to <c>true</c>, <see cref="ExpireIn"/> parameter is ignored.
         /// </summary>
         public bool FollowJobRetentionPolicy { get; set; } = true;
-        
+
         /// <summary>
         /// Gets or sets console poll interval (in ms).
         /// </summary>
@@ -38,7 +40,6 @@ namespace Hangfire.Console
         /// </summary>
         public string TimestampColor { get; set; } = "#00aad7";
 
-
         internal void Validate(string paramName)
         {
             if (ExpireIn < TimeSpan.FromMinutes(1))
@@ -47,7 +48,5 @@ namespace Hangfire.Console
             if (PollInterval < 100)
                 throw new ArgumentException("PollInterval shouldn't be less than 100 ms", paramName);
         }
-
-
     }
 }

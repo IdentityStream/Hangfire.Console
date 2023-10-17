@@ -9,6 +9,7 @@ namespace Hangfire.Console
     /// <summary>
     /// Provides extension methods for writing to console.
     /// </summary>
+   [PublicAPI]
     public static class ConsoleExtensions
     {
         /// <summary>
@@ -38,7 +39,7 @@ namespace Hangfire.Console
 
             consoleContext.TextColor = null;
         }
-        
+
         /// <summary>
         /// Adds an updateable progress bar to console.
         /// </summary>
@@ -71,7 +72,7 @@ namespace Hangfire.Console
         {
             ConsoleContext.FromPerformContext(context)?.WriteLine(value, null);
         }
-        
+
         /// <summary>
         /// Adds a string to console.
         /// </summary>
@@ -82,7 +83,7 @@ namespace Hangfire.Console
         {
             ConsoleContext.FromPerformContext(context)?.WriteLine(value, color);
         }
-        
+
         /// <summary>
         /// Adds an empty line to console.
         /// </summary>
@@ -140,7 +141,7 @@ namespace Hangfire.Console
         [StringFormatMethod("format")]
         public static void WriteLine(this PerformContext context, string format, params object[] args)
             => WriteLine(context, string.Format(format, args));
-        
+
         /// <summary>
         /// Adds a value to a console.
         /// </summary>

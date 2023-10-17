@@ -7,8 +7,8 @@ namespace Hangfire.Console.Serialization
     /// </summary>
     internal class ConsoleId : IEquatable<ConsoleId>
     {
-        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        
+        private static readonly DateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
         private string _cachedString;
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Hangfire.Console.Serialization
         /// <see cref="Timestamp"/> value as <see cref="DateTime"/>.
         /// </summary>
         public DateTime DateValue => UnixEpoch.AddMilliseconds(Timestamp);
-        
+
         /// <summary>
         /// Initializes an instance of <see cref="ConsoleId"/>
         /// </summary>
@@ -35,14 +35,14 @@ namespace Hangfire.Console.Serialization
         {
             if (string.IsNullOrEmpty(jobId))
                 throw new ArgumentNullException(nameof(jobId));
-            
+
             JobId = jobId;
             Timestamp = (long)(timestamp - UnixEpoch).TotalMilliseconds;
 
             if (Timestamp <= 0 || Timestamp > int.MaxValue * 1000L)
                 throw new ArgumentOutOfRangeException(nameof(timestamp));
         }
-        
+
         /// <summary>
         /// Initializes an instance of <see cref="ConsoleId"/>.
         /// </summary>
@@ -64,7 +64,7 @@ namespace Hangfire.Console.Serialization
                 throw new ArgumentNullException(nameof(value));
             if (value.Length < 12)
                 throw new ArgumentException("Invalid value", nameof(value));
-            
+
             // Timestamp is serialized in reverse order for better randomness!
 
             long timestamp = 0;
@@ -72,7 +72,7 @@ namespace Hangfire.Console.Serialization
             {
                 var c = value[i] | 0x20;
 
-                var x = (c >= '0' && c <= '9') ? (c - '0') : (c >= 'a' && c <= 'f') ? (c - 'a' + 10) : -1;
+                var x = c is >= '0' and <= '9' ? (c - '0') : c is >= 'a' and <= 'f' ? (c - 'a' + 10) : -1;
                 if (x == -1)
                     throw new ArgumentException("Invalid value", nameof(value));
 
@@ -87,8 +87,8 @@ namespace Hangfire.Console.Serialization
         {
             if (ReferenceEquals(other, null)) return false;
             if (ReferenceEquals(other, this)) return true;
-            
-            return other.Timestamp == Timestamp 
+
+            return other.Timestamp == Timestamp
                 && other.JobId == JobId;
         }
 
@@ -113,7 +113,7 @@ namespace Hangfire.Console.Serialization
 
             return _cachedString;
         }
-        
+
         /// <inheritdoc />
         public override bool Equals(object obj) => Equals(obj as ConsoleId);
 

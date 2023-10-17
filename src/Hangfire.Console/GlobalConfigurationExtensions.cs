@@ -6,12 +6,14 @@ using Hangfire.Dashboard.Extensions;
 using Hangfire.States;
 using System;
 using System.Reflection;
+using JetBrains.Annotations;
 
 namespace Hangfire.Console
 {
     /// <summary>
     /// Provides extension methods to setup Hangfire.Console.
     /// </summary>
+    [PublicAPI]
     public static class GlobalConfigurationExtensions
     {
         /// <summary>
@@ -43,11 +45,11 @@ namespace Hangfire.Console
 
             // register dispatchers to serve console data
             DashboardRoutes.Routes.Add("/console/progress", new JobProgressDispatcher(options));
-            DashboardRoutes.Routes.Add("/console/([0-9a-f]{11}.+)", new ConsoleDispatcher(options));
-            
+            DashboardRoutes.Routes.Add("/console/([0-9a-f]{11}.+)", new ConsoleDispatcher());
+
             // register additional dispatchers for CSS and JS
             var assembly = typeof(ConsoleRenderer).GetTypeInfo().Assembly;
-            
+
             var jsPath = DashboardRoutes.Routes.Contains("/js[0-9]+") ? "/js[0-9]+" : "/js[0-9]{3}";
             DashboardRoutes.Routes.Append(jsPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Console.Resources.resize.min.js"));
             DashboardRoutes.Routes.Append(jsPath, new DynamicJsDispatcher(options));
@@ -56,7 +58,7 @@ namespace Hangfire.Console
             var cssPath = DashboardRoutes.Routes.Contains("/css[0-9]+") ? "/css[0-9]+" : "/css[0-9]{3}";
             DashboardRoutes.Routes.Append(cssPath, new EmbeddedResourceDispatcher(assembly, "Hangfire.Console.Resources.style.css"));
             DashboardRoutes.Routes.Append(cssPath, new DynamicCssDispatcher(options));
-            
+
             return configuration;
         }
     }
