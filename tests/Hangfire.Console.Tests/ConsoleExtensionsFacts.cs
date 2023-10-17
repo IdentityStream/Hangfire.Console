@@ -42,7 +42,7 @@ namespace Hangfire.Console.Tests
             var context = CreatePerformContext();
             context.Items["ConsoleContext"] = CreateConsoleContext(context);
 
-            ConsoleExtensions.WriteLine(context, "");
+            context.WriteLine("");
 
             _transaction.Verify(x => x.Commit());
         }
@@ -52,7 +52,7 @@ namespace Hangfire.Console.Tests
         {
             var context = CreatePerformContext();
 
-            ConsoleExtensions.WriteLine(context, "");
+            context.WriteLine("");
 
             _transaction.Verify(x => x.Commit(), Times.Never);
         }
@@ -72,7 +72,7 @@ namespace Hangfire.Console.Tests
             var context = CreatePerformContext();
             context.Items["ConsoleContext"] = CreateConsoleContext(context);
 
-            var progressBar = ConsoleExtensions.WriteProgressBar(context);
+            var progressBar = context.WriteProgressBar();
 
             Assert.IsType<DefaultProgressBar>(progressBar);
             _transaction.Verify(x => x.Commit());
@@ -83,16 +83,17 @@ namespace Hangfire.Console.Tests
         {
             var context = CreatePerformContext();
 
-            var progressBar = ConsoleExtensions.WriteProgressBar(context);
+            var progressBar = context.WriteProgressBar();
 
             Assert.IsType<NoOpProgressBar>(progressBar);
             _transaction.Verify(x => x.Commit(), Times.Never);
         }
 
+        // ReSharper disable once RedundantDisableWarningComment
 #pragma warning disable xUnit1013
-        public static void JobMethod()
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static void JobMethod() {
 #pragma warning restore xUnit1013
-        {
         }
 
         private PerformContext CreatePerformContext()

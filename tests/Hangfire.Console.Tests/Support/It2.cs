@@ -13,9 +13,9 @@ namespace Hangfire.Console.Tests
         {
             var predicate = match.Compile();
 
-            return Match.Create<IEnumerable<TValue>>(
+            return Match.Create(
                 values => values.Any(predicate),
-                () => It2.AnyIs<TValue>(match));
+                () => AnyIs(match));
         }
     }
 }

@@ -276,7 +276,7 @@ namespace Hangfire.Console.Tests.Storage
             };
 
             _connection.Setup(x => x.GetRangeFromSet(_consoleId.GetSetKey(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns((string key, int start, int end) => lines.Where((x, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
+                .Returns((string _, int start, int end) => lines.Where((_, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
 
             var storage = new ConsoleStorage(_connection.Object);
 
@@ -296,7 +296,7 @@ namespace Hangfire.Console.Tests.Storage
             };
 
             _connection.Setup(x => x.GetRangeFromSet(_consoleId.GetOldConsoleKey(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns((string key, int start, int end) => lines.Where((x, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
+                .Returns((string _, int start, int end) => lines.Where((_, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
 
             var storage = new ConsoleStorage(_connection.Object);
 
@@ -313,7 +313,7 @@ namespace Hangfire.Console.Tests.Storage
             };
 
             _connection.Setup(x => x.GetRangeFromSet(_consoleId.GetSetKey(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns((string key, int start, int end) => lines.Where((x, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
+                .Returns((string _, int start, int end) => lines.Where((_, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
             _connection.Setup(x => x.GetValueFromHash(_consoleId.GetHashKey(), It.IsAny<string>()))
                 .Returns("Dereferenced Line");
 
@@ -333,7 +333,7 @@ namespace Hangfire.Console.Tests.Storage
             };
 
             _connection.Setup(x => x.GetRangeFromSet(_consoleId.GetOldConsoleKey(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns((string key, int start, int end) => lines.Where((x, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
+                .Returns((string _, int start, int end) => lines.Where((_, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
             _connection.Setup(x => x.GetValueFromHash(_consoleId.GetOldConsoleKey(), It.IsAny<string>()))
                 .Returns("Dereferenced Line");
 
@@ -353,7 +353,7 @@ namespace Hangfire.Console.Tests.Storage
             };
 
             _connection.Setup(x => x.GetRangeFromSet(_consoleId.GetOldConsoleKey(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns((string key, int start, int end) => lines.Where((x, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
+                .Returns((string _, int start, int end) => lines.Where((_, i) => i >= start && i <= end).Select(SerializationHelper.Serialize).ToList());
 
             _connection.Setup(x => x.GetValueFromHash(_consoleId.GetOldConsoleKey(), It.IsAny<string>()))
                 .Throws(new NotSupportedException());

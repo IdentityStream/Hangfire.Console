@@ -6,8 +6,6 @@ using Hangfire.Storage.Monitoring;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Hangfire.Console.Tests.States
@@ -41,7 +39,7 @@ namespace Hangfire.Console.Tests.States
         public void UsesFinalJobExpirationTimeoutValue()
         {
             _otherFilter.Setup(x => x.OnStateApplied(It.IsAny<ApplyStateContext>(), It.IsAny<IWriteOnlyTransaction>()))
-                .Callback<ApplyStateContext, IWriteOnlyTransaction>((c, t) => c.JobExpirationTimeout = TimeSpan.FromSeconds(123));
+                .Callback<ApplyStateContext, IWriteOnlyTransaction>((c, _) => c.JobExpirationTimeout = TimeSpan.FromSeconds(123));
             _connection.Setup(x => x.GetJobData("1"))
                 .Returns(CreateJobData(ProcessingState.StateName));
             _monitoring.Setup(x => x.JobDetails("1"))
@@ -152,6 +150,7 @@ namespace Hangfire.Console.Tests.States
             return new StateChangeContext(_storage.Object, _connection.Object, "1", state);
         }
 
+        // ReSharper disable once RedundantDisableWarningComment
 #pragma warning disable xUnit1013
         public static void JobMethod()
 #pragma warning restore xUnit1013

@@ -6,7 +6,7 @@ namespace Hangfire.Console.Tests.Serialization
 {
     public class ConsoleIdFacts
     {
-        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         [Fact]
         public void Ctor_ThrowsAnException_WhenJobIdIsNull()
@@ -23,17 +23,17 @@ namespace Hangfire.Console.Tests.Serialization
         [Fact]
         public void Ctor_ThrowsAnException_WhenTimestampBeforeEpoch()
         {
-            Assert.Throws<ArgumentOutOfRangeException>("timestamp", 
+            Assert.Throws<ArgumentOutOfRangeException>("timestamp",
                 () => new ConsoleId("123", UnixEpoch));
         }
 
         [Fact]
         public void Ctor_ThrowsAnException_WhenTimestampAfterEpochPlusMaxInt()
         {
-            Assert.Throws<ArgumentOutOfRangeException>("timestamp", 
+            Assert.Throws<ArgumentOutOfRangeException>("timestamp",
                 () => new ConsoleId("123", UnixEpoch.AddSeconds(int.MaxValue).AddSeconds(1)));
         }
-        
+
         [Fact]
         public void SerializesCorrectly()
         {

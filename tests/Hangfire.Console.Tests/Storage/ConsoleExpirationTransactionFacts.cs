@@ -9,16 +9,9 @@ namespace Hangfire.Console.Tests.Storage
 {
     public class ConsoleExpirationTransactionFacts
     {
-        private readonly ConsoleId _consoleId;
-        
-        private readonly Mock<JobStorageTransaction> _transaction;
+        private readonly ConsoleId _consoleId = new("1", DateTime.UtcNow);
 
-        public ConsoleExpirationTransactionFacts()
-        {
-            _consoleId = new ConsoleId("1", DateTime.UtcNow);
-            
-            _transaction = new Mock<JobStorageTransaction>();
-        }
+        private readonly Mock<JobStorageTransaction> _transaction = new();
 
         [Fact]
         public void Ctor_ThrowsException_IfTransactionIsNull()
@@ -35,7 +28,7 @@ namespace Hangfire.Console.Tests.Storage
 
             _transaction.Verify(x => x.Dispose());
         }
-        
+
         [Fact]
         public void Expire_ThrowsException_IfConsoleIdIsNull()
         {
@@ -43,7 +36,7 @@ namespace Hangfire.Console.Tests.Storage
 
             Assert.Throws<ArgumentNullException>("consoleId", () => expiration.Expire(null, TimeSpan.FromHours(1)));
         }
-        
+
         [Fact]
         public void Expire_ExpiresSetAndHash()
         {
@@ -66,7 +59,7 @@ namespace Hangfire.Console.Tests.Storage
 
             Assert.Throws<ArgumentNullException>("consoleId", () => expiration.Persist(null));
         }
-        
+
         [Fact]
         public void Persist_PersistsSetAndHash()
         {

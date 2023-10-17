@@ -15,15 +15,8 @@ namespace Hangfire.Console.Tests.Dashboard
 {
     public class ConsoleRendererFacts
     {
-        private readonly ConsoleId _consoleId;
-        private readonly Mock<IConsoleStorage> _storage;
-
-        public ConsoleRendererFacts()
-        {
-            _consoleId = new ConsoleId("1", new DateTime(2016, 1, 1, 0, 0, 0, DateTimeKind.Utc));
-
-            _storage = new Mock<IConsoleStorage>();
-        }
+        private readonly ConsoleId _consoleId = new("1", new DateTime(2016, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        private readonly Mock<IConsoleStorage> _storage = new();
 
         [Fact]
         public void RenderText_Empty()
@@ -348,7 +341,7 @@ namespace Hangfire.Console.Tests.Dashboard
             _storage.Setup(x => x.GetLineCount(It.IsAny<ConsoleId>()))
                 .Returns(lines.Length);
             _storage.Setup(x => x.GetLines(It.IsAny<ConsoleId>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns((ConsoleId id, int start, int end) => lines.Where((x, i) => i >= start && i <= end));
+                .Returns((ConsoleId _, int start, int end) => lines.Where((_, i) => i >= start && i <= end));
         }
     }
 }

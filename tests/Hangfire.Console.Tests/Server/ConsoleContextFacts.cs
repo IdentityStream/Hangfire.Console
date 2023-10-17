@@ -9,12 +9,7 @@ namespace Hangfire.Console.Tests.Server
 {
     public class ConsoleContextFacts
     {
-        private readonly Mock<IConsoleStorage> _storage;
-
-        public ConsoleContextFacts()
-        {
-            _storage = new Mock<IConsoleStorage>();
-        }
+        private readonly Mock<IConsoleStorage> _storage = new();
 
         [Fact]
         public void Ctor_ThrowsException_IfConsoleIdIsNull()
@@ -34,7 +29,7 @@ namespace Hangfire.Console.Tests.Server
         public void Ctor_InitializesConsole()
         {
             var consoleId = new ConsoleId("1", new DateTime(2016, 1, 1, 0, 0, 0, DateTimeKind.Utc));
-            var context = new ConsoleContext(consoleId, _storage.Object);
+            _ = new ConsoleContext(consoleId, _storage.Object);
 
             _storage.Verify(x => x.InitConsole(consoleId));
         }
@@ -83,7 +78,7 @@ namespace Hangfire.Console.Tests.Server
 
             context.WriteLine("line", null);
 
-            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(_ => _.Message == "line" && _.TextColor == null)));
+            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(l => l.Message == "line" && l.TextColor == null)));
         }
 
         [Fact]
@@ -94,7 +89,7 @@ namespace Hangfire.Console.Tests.Server
 
             context.WriteLine("line", ConsoleTextColor.Red);
 
-            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(_ => _.Message == "line" && _.TextColor == ConsoleTextColor.Red)));
+            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(l => l.Message == "line" && l.TextColor == ConsoleTextColor.Red)));
         }
 
         [Fact]
@@ -108,7 +103,7 @@ namespace Hangfire.Console.Tests.Server
             _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.IsAny<ConsoleLine>()));
             Assert.NotNull(progressBar);
         }
-        
+
         [Fact]
         public void WriteProgressBar_WritesName_AndReturnsNonNull()
         {
@@ -117,10 +112,10 @@ namespace Hangfire.Console.Tests.Server
 
             var progressBar = context.WriteProgressBar("test", 0, null);
 
-            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(_ => _.ProgressName == "test")));
+            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(l => l.ProgressName == "test")));
             Assert.NotNull(progressBar);
         }
-        
+
         [Fact]
         public void WriteProgressBar_WritesInitialValue_AndReturnsNonNull()
         {
@@ -129,7 +124,8 @@ namespace Hangfire.Console.Tests.Server
 
             var progressBar = context.WriteProgressBar(null, 5, null);
 
-            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(_ => _.ProgressValue == 5)));
+            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(l =>
+                l.ProgressValue.HasValue && Math.Abs(l.ProgressValue.Value - 5.0) < double.Epsilon)));
             Assert.NotNull(progressBar);
         }
 
@@ -141,7 +137,7 @@ namespace Hangfire.Console.Tests.Server
 
             var progressBar = context.WriteProgressBar(null, 0, ConsoleTextColor.Red);
 
-            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(_ => _.TextColor == ConsoleTextColor.Red)));
+            _storage.Verify(x => x.AddLine(It.IsAny<ConsoleId>(), It.Is<ConsoleLine>(l => l.TextColor == ConsoleTextColor.Red)));
             Assert.NotNull(progressBar);
         }
 
@@ -155,7 +151,7 @@ namespace Hangfire.Console.Tests.Server
 
             _storage.Verify(x => x.Expire(It.IsAny<ConsoleId>(), It.IsAny<TimeSpan>()));
         }
-        
+
         [Fact]
         public void FixExpiration_RequestsConsoleTtl_IgnoresIfNegative()
         {

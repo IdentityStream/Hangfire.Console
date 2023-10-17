@@ -167,7 +167,9 @@ namespace Hangfire.Console.Tests.Server
             _transaction.Verify(x => x.Commit());
         }
 
+        // ReSharper disable once RedundantDisableWarningComment
 #pragma warning disable xUnit1013
+        // ReSharper disable once MemberCanBePrivate.Global
         public static void JobMethod(PerformContext context)
 #pragma warning restore xUnit1013
         {
@@ -178,9 +180,11 @@ namespace Hangfire.Console.Tests.Server
 
         private IJobFilterProvider CreateJobFilterProvider(bool followJobRetention = false)
         {
-            var filters = new JobFilterCollection();
-            filters.Add(new ConsoleServerFilter(new ConsoleOptions() { FollowJobRetentionPolicy = followJobRetention }));
-            filters.Add(_otherFilter.Object);
+            var filters = new JobFilterCollection
+            {
+                new ConsoleServerFilter(new ConsoleOptions() { FollowJobRetentionPolicy = followJobRetention }),
+                _otherFilter.Object
+            };
             return new JobFilterProviderCollection(filters);
         }
 
@@ -190,8 +194,13 @@ namespace Hangfire.Console.Tests.Server
                 _jobStorage.Object,
                 _connection.Object,
                 new BackgroundJob("1", Job.FromExpression(() => JobMethod(null)), DateTime.UtcNow),
-                _cancellationToken.Object);
-            context.Items["this"] = this;
+                _cancellationToken.Object)
+            {
+                Items =
+                {
+                    ["this"] = this
+                }
+            };
             return context;
         }
 
