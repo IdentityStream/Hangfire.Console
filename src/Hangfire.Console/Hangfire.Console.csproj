@@ -4,7 +4,7 @@
     <AssemblyTitle>Hangfire.Console</AssemblyTitle>
     <VersionPrefix>1.4.2</VersionPrefix>
     <Authors>Alexey Skalozub</Authors>
-    <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Hangfire.Console</AssemblyName>
@@ -13,15 +13,15 @@
     <PackageReleaseNotes>History:
       v1.4.2:
       • Added StringFormatMethod attributes on WriteLine methods (for better intellisense)
-      
+
       v1.4.1:
       • Fix job progress style
       • Use explicit json serializer settings
       • Remove ConsoleContext from Items in OnPerformed
-      
+
       v1.4.0:
       • Show job progress at Processing Jobs page
-      
+
       v1.3.10:
       • Fix expiration issues (#47)
 
