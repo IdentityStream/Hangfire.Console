@@ -1,5 +1,6 @@
 <Project>
     <PropertyGroup>
+        <WarningsAsErrors>true</WarningsAsErrors>
         <LangVersion>11</LangVersion>
     </PropertyGroup>
 </Project>
