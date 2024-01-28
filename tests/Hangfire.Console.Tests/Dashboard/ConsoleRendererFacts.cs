@@ -137,7 +137,18 @@ public class ConsoleRendererFacts
 
         ConsoleRenderer.RenderLine(builder, line, new DateTime(2016, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
-        Assert.Equal("<div class=\"line pb\" data-id=\"3\"><span data-moment-title=\"1451606400\">+ &lt;1ms</span><div class=\"pv\" style=\"width:17.3%\" data-value=\"17\"></div></div>", builder.ToString());
+        Assert.Equal("<div class=\"line pb\" data-id=\"3\"><span data-moment-title=\"1451606400\">+ &lt;1ms</span><div class=\"pv\" style=\"width:17.3%\" data-value=\"17.3\"></div></div>", builder.ToString());
+    }
+
+    [Fact]
+    public void RenderLine_WithFractionalProgressWith4DecimalPlaces()
+    {
+        var line = new ConsoleLine { TimeOffset = 0, Message = "3", ProgressValue = 17.3213 };
+        var builder = new StringBuilder();
+
+        ConsoleRenderer.RenderLine(builder, line, new DateTime(2016, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+        Assert.Equal("<div class=\"line pb\" data-id=\"3\"><span data-moment-title=\"1451606400\">+ &lt;1ms</span><div class=\"pv\" style=\"width:17.3213%\" data-value=\"17.3213\"></div></div>", builder.ToString());
     }
 
     [Fact]
