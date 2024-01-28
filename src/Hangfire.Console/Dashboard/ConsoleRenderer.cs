@@ -104,7 +104,7 @@ internal static class ConsoleRenderer
 
         if (isProgressBar)
         {
-            builder.AppendFormat(CultureInfo.InvariantCulture, "<div class=\"pv\" style=\"width:{0:0.#}%\" data-value=\"{0:f0}\"></div>", line.ProgressValue!.Value);
+            builder.AppendFormat(CultureInfo.InvariantCulture, "<div class=\"pv\" style=\"width:{0}%\" data-value=\"{0}\"></div>", line.ProgressValue!.Value);
         }
         else
         {
@@ -249,6 +249,7 @@ internal static class ConsoleRenderer
 
     private class DummyPage : RazorPage
     {
-        public override void Execute() { }
+        public override void Execute()
+        { }
     }
 }
